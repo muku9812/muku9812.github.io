@@ -1,720 +1,997 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mukesh Mandal — Full Stack Developer</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg: #0d1117;
-      --bg2: #161b22;
-      --bg3: #1c2128;
-      --border: #30363d;
-      --border2: #21262d;
-      --green: #39d353;
-      --blue: #58a6ff;
-      --purple: #bc8cff;
-      --orange: #f0883e;
-      --red: #ff7b72;
-      --yellow: #e3b341;
-      --text: #c9d1d9;
-      --text-dim: #8b949e;
-      --text-bright: #f0f6fc;
-      --mono: 'JetBrains Mono', monospace;
-      --sans: 'Space Grotesk', sans-serif;
-    }
-    html { scroll-behavior: smooth; }
-    body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; cursor: none; }
-    body::before {
-      content: ''; position: fixed; inset: 0; z-index: 9990; pointer-events: none;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mukesh Mandal | Full Stack Developer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{
+  --c0:#030508;--c1:#080d14;--c2:#0d1520;
+  --accent:#00f5c4;--accent2:#7c3aed;--accent3:#f43f5e;--gold:#fbbf24;
+  --txt:#cdd6f4;--txt2:#6c7a9c;
+  --glass:rgba(255,255,255,0.03);--glass-border:rgba(255,255,255,0.07);
+  --glow-a:rgba(0,245,196,0.15);--glow-b:rgba(124,58,237,0.15);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'DM Sans',sans-serif;background:var(--c0);color:var(--txt);overflow-x:hidden;cursor:none;}
 
-    /* CURSOR */
-    body { cursor: none; }
-    #cursor { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-4px, -4px); filter: drop-shadow(0 0 6px rgba(57,211,83,0.7)); }
-    #cursor svg { width: 32px; height: 32px; display: block; }
-    #cursor-dot { position: fixed; pointer-events: none; z-index: 9998; width: 5px; height: 5px; border-radius: 50%; background: var(--green); transform: translate(-50%, -50%); box-shadow: 0 0 8px var(--green); }
-    #cursor-trail { position: fixed; pointer-events: none; z-index: 9997; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(57,211,83,0.25); transform: translate(-50%, -50%); transition: left 0.18s ease, top 0.18s ease; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+/* ── CURSOR ── */
+#cur-dot{width:5px;height:5px;background:var(--accent);border-radius:50%;position:fixed;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);box-shadow:0 0 14px var(--accent),0 0 40px rgba(0,245,196,0.4);}
+#cur-ring{width:36px;height:36px;border:1px solid rgba(0,245,196,0.5);border-radius:50%;position:fixed;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:left .12s cubic-bezier(.25,.46,.45,.94),top .12s cubic-bezier(.25,.46,.45,.94),width .2s,height .2s,border-color .2s,background .2s;}
+#cur-ring.big{width:52px;height:52px;border-color:var(--accent2);background:rgba(124,58,237,0.06);}
+#cur-ring.clicking{width:20px;height:20px;background:rgba(0,245,196,0.2);}
 
-    /* NAV */
-    nav { position: fixed; top:0; left:0; right:0; z-index:100; height:48px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:var(--bg2); border-bottom:1px solid var(--border); font-size:0.72rem; }
-    .nav-tabs { display:flex; height:100%; }
-    .nav-tab { display:flex; align-items:center; gap:0.45rem; padding:0 1.1rem; color:var(--text-dim); text-decoration:none; border-right:1px solid var(--border); font-size:0.7rem; transition:color 0.15s,background 0.15s; position:relative; }
-    .nav-tab:first-child { border-left:1px solid var(--border); }
-    .nav-tab.active,.nav-tab:hover { color:var(--text-bright); background:var(--bg3); }
-    .nav-tab.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--green); }
-    .n-dot { width:7px; height:7px; border-radius:50%; }
-    .nd-g { background:#3fb950; } .nd-b { background:var(--blue); } .nd-p { background:var(--purple); } .nd-o { background:var(--orange); }
-    .nav-right { font-size:0.65rem; color:var(--text-dim); display:flex; align-items:center; gap:1.2rem; }
-    .nav-branch { color:var(--purple); display:flex; align-items:center; gap:0.35rem; }
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--c0);}
+::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:4px;}
 
-    /* HERO */
-    #hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; padding:6rem 4rem 3rem; gap:3rem; position:relative; overflow:hidden; }
-    .hero-glow { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 65% 65% at 70% 50%, rgba(57,211,83,0.04) 0%, transparent 70%); }
+/* ── PROGRESS ── */
+#sprogress{position:fixed;top:0;left:0;height:1.5px;background:linear-gradient(90deg,var(--accent),var(--accent2),var(--accent3));z-index:1000;width:0;transition:width .08s;}
 
-    /* Terminal window */
-    .t-win { background:var(--bg2); border:1px solid var(--border); border-radius:8px; overflow:hidden; position:relative; z-index:1; animation:fadeUp 0.5s ease both; }
-    .t-bar { background:var(--bg3); border-bottom:1px solid var(--border); padding:0.55rem 1rem; display:flex; align-items:center; gap:0.45rem; }
-    .tb { width:12px; height:12px; border-radius:50%; } .tb-r{background:#ff5f57;} .tb-y{background:#ffbd2e;} .tb-g{background:#28c840;}
-    .t-bar-title { margin-left:0.6rem; font-size:0.65rem; color:var(--text-dim); }
-    .t-body { padding:1.4rem 1.8rem 1.8rem; font-size:0.78rem; line-height:2; }
-    .t-line { display:flex; align-items:flex-start; gap:0.5rem; }
-    .tp { color:var(--green); user-select:none; flex-shrink:0; } .tc { color:var(--text-bright); }
-    .to { color:var(--text-dim); padding-left:1.1rem; display:block; }
-    .tk { color:var(--blue); } .tv { color:var(--green); } .ts { color:var(--orange); }
-    .tpunc { color:var(--text-dim); }
-    .t-csr { display:inline-block; width:8px; height:1em; background:var(--green); vertical-align:text-bottom; animation:blink 1s step-end infinite; margin-left:2px; }
-    .t-gap { height:0.6rem; }
+/* ── BG CANVAS ── */
+#bg-canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;}
 
-    /* Hero right */
-    .hero-right { position:relative; z-index:1; display:flex; flex-direction:column; gap:1rem; animation:fadeIn 0.6s 0.2s ease both; }
-    .hero-ctas { display:flex; gap:0.8rem; flex-wrap:wrap; }
-    .btn-p { display:inline-flex; align-items:center; gap:0.4rem; background:var(--green); color:var(--bg); font-family:var(--mono); font-weight:700; font-size:0.72rem; padding:0.65rem 1.3rem; text-decoration:none; border-radius:4px; transition:opacity 0.2s,transform 0.15s; }
-    .btn-p:hover { opacity:0.85; transform:translateY(-1px); }
-    .btn-o { display:inline-flex; align-items:center; gap:0.4rem; border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:0.72rem; padding:0.65rem 1.3rem; text-decoration:none; border-radius:4px; transition:border-color 0.2s,color 0.2s; }
-    .btn-o:hover { border-color:var(--green); color:var(--green); }
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;width:100%;z-index:100;padding:18px 6vw;display:flex;justify-content:space-between;align-items:center;transition:all .4s;}
+nav.scrolled{background:rgba(3,5,8,0.92);backdrop-filter:blur(24px);border-bottom:1px solid var(--glass-border);padding:14px 6vw;}
+.nav-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.3rem;letter-spacing:-.03em;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.nav-links{display:flex;gap:2.2rem;list-style:none;}
+.nav-links a{font-size:.78rem;font-weight:500;color:var(--txt2);letter-spacing:.08em;text-transform:uppercase;text-decoration:none;position:relative;transition:color .3s;}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--accent);transition:width .3s;}
+.nav-links a:hover{color:var(--accent);}
+.nav-links a:hover::after{width:100%;}
+.nav-cta{padding:.48rem 1.4rem;border-radius:100px;border:1px solid rgba(0,245,196,0.4);color:var(--accent);font-size:.78rem;font-weight:600;text-decoration:none;letter-spacing:.05em;transition:all .3s;position:relative;overflow:hidden;}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--accent);transform:scaleX(0);transform-origin:left;transition:transform .3s;}
+.nav-cta:hover::before{transform:scaleX(1);}
+.nav-cta:hover{color:var(--c0);}
+.nav-cta span{position:relative;z-index:1;}
+.menu-btn{display:none;background:none;border:none;color:var(--txt);font-size:1.3rem;cursor:none;}
 
-    .stat-cards { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
-    .sc { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:0.9rem 1.1rem; }
-    .sc-num { font-size:1.7rem; font-weight:700; color:var(--green); line-height:1; }
-    .sc-label { font-size:0.6rem; color:var(--text-dim); margin-top:0.25rem; }
+/* ── HERO ── */
+section{position:relative;z-index:1;}
+#hero{min-height:100vh;display:flex;align-items:center;padding:0 6vw;overflow:hidden;}
+.hero-content{max-width:600px;padding-top:5rem;}
 
-    .contrib-box { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:1rem 1.2rem; }
-    .cb-title { font-size:0.62rem; color:var(--text-dim); margin-bottom:0.7rem; }
-    .cb-grid { display:grid; grid-template-columns:repeat(26,1fr); grid-template-rows:repeat(7,1fr); gap:2px; }
-    .cc { width:100%; aspect-ratio:1; border-radius:2px; background:var(--bg3); }
-    .cc1{background:#0e4429;} .cc2{background:#006d32;} .cc3{background:#26a641;} .cc4{background:#39d353;}
+.hero-badge{display:inline-flex;align-items:center;gap:.6rem;padding:.45rem 1.1rem;border-radius:100px;background:rgba(0,245,196,0.06);border:1px solid rgba(0,245,196,0.18);margin-bottom:2rem;font-size:.72rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);animation:fadeUp .8s ease both;}
+.badge-dot{width:6px;height:6px;background:var(--accent);border-radius:50%;animation:pulse 2s ease infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.4;transform:scale(.7);}}
 
-    .tech-box { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:0.9rem 1.2rem; }
-    .tech-title { font-size:0.62rem; color:var(--text-dim); margin-bottom:0.7rem; }
-    .tech-bars { display:flex; flex-direction:column; gap:0.45rem; }
-    .tbr { display:flex; align-items:center; gap:0.7rem; }
-    .tbn { font-size:0.6rem; color:var(--text-dim); width:72px; flex-shrink:0; }
-    .tbt { flex:1; height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; }
-    .tbf { height:100%; border-radius:3px; }
-    .tbp { font-size:0.58rem; color:var(--text-dim); width:28px; text-align:right; }
+.hero-name{font-family:'Syne',sans-serif;font-size:clamp(3.2rem,7.5vw,6.5rem);font-weight:800;line-height:.92;letter-spacing:-.05em;margin-bottom:1.4rem;animation:fadeUp .8s .12s ease both;}
+.hero-name .l1{display:block;color:var(--txt);}
+.hero-name .l2{display:block;background:linear-gradient(120deg,var(--accent) 0%,var(--accent2) 50%,var(--accent3) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 30px rgba(0,245,196,0.3));}
 
-    /* SECTIONS */
-    section { padding:5rem 4rem; }
-    .sh { margin-bottom:2.5rem; }
-    .sbc { font-size:0.63rem; color:var(--text-dim); margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem; }
-    .sbc-a { color:var(--text); }
-    .st { font-family:var(--sans); font-size:clamp(1.5rem,2.5vw,2.2rem); font-weight:700; color:var(--text-bright); line-height:1.2; }
-    .hl-g { color:var(--green); } .hl-b { color:var(--blue); } .hl-p { color:var(--purple); }
+.hero-role{font-family:'JetBrains Mono',monospace;font-size:.92rem;font-weight:300;color:var(--txt2);margin-bottom:1.4rem;animation:fadeUp .8s .22s ease both;min-height:1.4rem;}
+.cursor-blink{display:inline-block;width:2px;height:.9em;background:var(--accent);margin-left:2px;animation:blink 1s infinite;vertical-align:middle;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
 
-    /* ABOUT */
-    #about { background:var(--bg); border-top:1px solid var(--border2); }
-    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
-    .cb { background:var(--bg2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-    .cbh { background:var(--bg3); border-bottom:1px solid var(--border); padding:0.5rem 1rem; display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; color:var(--text-dim); }
-    .cbb { padding:1.1rem 1.3rem; font-size:0.75rem; line-height:1.95; }
-    .ln { color:#3d444d; user-select:none; margin-right:0.8rem; display:inline-block; width:1.4rem; text-align:right; }
-    .kw{color:var(--red);} .fn{color:var(--purple);} .prop{color:var(--blue);} .str2{color:var(--orange);} .num{color:var(--green);} .cm{color:#8b949e;font-style:italic;} .punc{color:var(--text-dim);}
+.hero-desc{font-size:.95rem;line-height:1.85;color:var(--txt2);max-width:480px;margin-bottom:2.2rem;animation:fadeUp .8s .32s ease both;}
 
-    .skill-rows { display:flex; flex-direction:column; }
-    .sr { display:flex; align-items:center; gap:0.7rem; padding:0.45rem 0.8rem; border-radius:3px; transition:background 0.15s; }
-    .sr:hover { background:var(--bg3); }
-    .sr-icon { font-size:0.7rem; flex-shrink:0; }
-    .sr-name { font-size:0.72rem; color:var(--text); flex:1; }
-    .sr-lv { font-size:0.56rem; padding:0.15rem 0.45rem; border-radius:3px; }
-    .lv-e { background:rgba(57,211,83,0.12); color:var(--green); }
-    .lv-m { background:rgba(88,166,255,0.12); color:var(--blue); }
-    .lv-b { background:rgba(240,136,62,0.12); color:var(--orange); }
+.hero-actions{display:flex;gap:.9rem;flex-wrap:wrap;animation:fadeUp .8s .42s ease both;}
+.btn-primary{padding:.82rem 2rem;border-radius:100px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--c0);font-weight:700;font-size:.86rem;text-decoration:none;transition:all .3s;letter-spacing:.04em;position:relative;overflow:hidden;box-shadow:0 0 30px rgba(0,245,196,0.2);}
+.btn-primary::before{content:'';position:absolute;inset:0;background:rgba(255,255,255,0.18);transform:translateX(-110%) skewX(-15deg);transition:transform .45s;}
+.btn-primary:hover::before{transform:translateX(200%) skewX(-15deg);}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 16px 50px rgba(0,245,196,0.35);}
+.btn-ghost{padding:.82rem 2rem;border-radius:100px;border:1px solid var(--glass-border);color:var(--txt);font-weight:500;font-size:.86rem;text-decoration:none;transition:all .3s;}
+.btn-ghost:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,245,196,0.04);}
 
-    /* EXPERIENCE */
-    #experience { background:var(--bg2); border-top:1px solid var(--border2); border-bottom:1px solid var(--border2); }
-    .exp-list { display:flex; flex-direction:column; gap:1px; background:var(--border2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-    .ei { background:var(--bg2); padding:1.8rem 2.2rem; display:grid; grid-template-columns:190px 1fr; gap:2rem; opacity:0; transform:translateX(-14px); transition:opacity 0.5s,transform 0.5s,background 0.15s; }
-    .ei.visible { opacity:1; transform:translateX(0); }
-    .ei:hover { background:var(--bg3); }
-    .ei-current { border-left:2px solid var(--green); }
-    .ei-meta { border-right:1px solid var(--border2); padding-right:1.8rem; }
-    .ei-date { font-size:0.62rem; color:var(--text-dim); line-height:1.7; margin-bottom:0.4rem; }
-    .ei-company { font-size:0.78rem; font-weight:600; color:var(--green); margin-bottom:0.2rem; }
-    .ei-loc { font-size:0.6rem; color:var(--text-dim); }
-    .ei-role { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.5rem; }
-    .ei-desc { font-size:0.72rem; color:var(--text-dim); line-height:1.8; }
-    .ei-chips { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.7rem; }
-    .chip { font-size:0.58rem; padding:0.15rem 0.55rem; border:1px solid var(--border); border-radius:3px; color:var(--text-dim); }
-    .chip-cur { border-color:rgba(57,211,83,0.3); color:var(--green); }
+.hero-socials{display:flex;gap:1rem;margin-top:2.2rem;animation:fadeUp .8s .52s ease both;}
+.hero-socials a{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:1px solid var(--glass-border);color:var(--txt2);font-size:.9rem;text-decoration:none;transition:all .3s;}
+.hero-socials a:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,245,196,0.07);transform:translateY(-3px);box-shadow:0 8px 20px rgba(0,245,196,0.15);}
 
-    /* PROJECTS */
-    #projects { background:var(--bg); }
-    .pg { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:1px; background:var(--border2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-    .pc { background:var(--bg2); padding:1.6rem 1.8rem; position:relative; overflow:hidden; opacity:0; transform:translateY(14px); transition:background 0.15s,opacity 0.5s,transform 0.5s; }
-    .pc.visible { opacity:1; transform:translateY(0); }
-    .pc:hover { background:var(--bg3); }
-    .pc::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:transparent; transition:background 0.2s; }
-    .pc:hover::before { background:var(--green); }
-    .pc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.6rem; }
-    .pc-icon { font-size:1.1rem; }
-    .pc-num { font-size:0.58rem; color:var(--text-dim); font-family:var(--mono); }
-    .pc-name { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.4rem; }
-    .pc-co { display:inline-block; font-size:0.56rem; padding:0.12rem 0.45rem; border-radius:3px; margin-bottom:0.7rem; font-weight:500; }
-    .co-t { background:rgba(188,140,255,0.12); color:var(--purple); border:1px solid rgba(188,140,255,0.2); }
-    .co-y { background:rgba(57,211,83,0.1);  color:var(--green);  border:1px solid rgba(57,211,83,0.2); }
-    .co-f { background:rgba(88,166,255,0.1); color:var(--blue);   border:1px solid rgba(88,166,255,0.2); }
-    .pc-desc { font-size:0.7rem; color:var(--text-dim); line-height:1.8; margin-bottom:0.8rem; }
-    .pc-tags { display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.8rem; }
-    .pt { font-size:0.56rem; padding:0.12rem 0.45rem; background:var(--bg3); border:1px solid var(--border); color:var(--text-dim); border-radius:3px; }
-    .pl { font-size:0.68rem; color:var(--blue); text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; transition:color 0.15s; }
-    .pl:hover { color:var(--green); }
-    .pl-na { font-size:0.68rem; color:var(--text-dim); }
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;margin-top:2.8rem;background:var(--glass-border);border-radius:16px;overflow:hidden;animation:fadeUp .8s .58s ease both;max-width:460px;}
+.stat-item{background:var(--c1);padding:1.1rem .8rem;text-align:center;}
+.stat-num{font-family:'Syne',sans-serif;font-weight:800;font-size:1.6rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;margin-bottom:.3rem;}
+.stat-label{font-size:.62rem;color:var(--txt2);letter-spacing:.09em;text-transform:uppercase;}
 
-    /* EDUCATION */
-    #education { background:var(--bg2); border-top:1px solid var(--border2); }
-    .edu-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
-    .edu-card { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1.6rem 1.8rem; transition:border-color 0.2s; }
-    .edu-card:hover { border-color:var(--green); }
-    .edu-yr { font-size:0.62rem; color:var(--green); margin-bottom:0.6rem; }
-    .edu-deg { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.25rem; }
-    .edu-sch { font-size:0.68rem; color:var(--blue); margin-bottom:0.5rem; }
-    .edu-note { font-size:0.68rem; color:var(--text-dim); line-height:1.7; }
+.hero-3d-wrap{position:absolute;right:-2%;top:0;width:54%;height:100%;pointer-events:none;}
+.hero-3d-wrap canvas{width:100%!important;height:100%!important;}
 
-    .lang-sec { margin-top:2.5rem; }
-    .lang-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; }
-    .lc { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1rem; text-align:center; transition:border-color 0.2s; }
-    .lc:hover { border-color:var(--green); }
-    .lc-name { font-size:0.75rem; color:var(--text-bright); margin-bottom:0.5rem; font-weight:500; }
-    .lbt { height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
-    .lbf { height:100%; border-radius:2px; }
-    .lc-lvl { font-size:0.58rem; color:var(--text-dim); margin-top:0.35rem; }
+@keyframes fadeUp{from{opacity:0;transform:translateY(28px);}to{opacity:1;transform:translateY(0);}}
 
-    /* CONTACT */
-    #contact { background:var(--bg); border-top:1px solid var(--border2); }
-    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; }
-    .cl-list { display:flex; flex-direction:column; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
-    .cli { display:flex; align-items:center; gap:0.9rem; padding:0.85rem 1.1rem; text-decoration:none; color:var(--text-dim); font-size:0.7rem; background:var(--bg2); border-bottom:1px solid var(--border2); transition:background 0.15s,color 0.15s; }
-    .cli:last-child { border-bottom:none; }
-    .cli:hover { background:var(--bg3); color:var(--green); }
-    .cli-ico { font-size:0.85rem; width:18px; }
-    .cli-lbl { font-size:0.58rem; color:var(--text-dim); display:block; margin-bottom:0.08rem; }
-    .cli-val { color:var(--text); font-size:0.7rem; }
-    .cli:hover .cli-val { color:var(--green); }
+/* ── SECTION COMMONS ── */
+.sec-wrap{padding:8rem 6vw;}
+.sec-header{margin-bottom:4.5rem;text-align:center;}
+.sec-tag{display:inline-block;font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--accent);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.8rem;opacity:.75;}
+.sec-title{font-family:'Syne',sans-serif;font-weight:800;font-size:clamp(2rem,4vw,3.5rem);letter-spacing:-.04em;line-height:1;color:var(--txt);}
+.sec-title span{background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.sec-line{width:50px;height:2px;background:linear-gradient(90deg,var(--accent),var(--accent2));margin:1.2rem auto 0;border-radius:2px;}
 
-    /* FOOTER */
-    footer { padding:0.9rem 2rem; background:var(--bg2); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:0.62rem; color:var(--text-dim); }
-    .f-status { display:flex; align-items:center; gap:0.4rem; }
-    .f-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s ease infinite; }
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
-    footer a { color:var(--blue); text-decoration:none; }
-    footer a:hover { color:var(--green); }
+/* ── REVEAL ── */
+.reveal{opacity:0;transform:translateY(40px);transition:all .9s cubic-bezier(.16,1,.3,1);}
+.reveal.in{opacity:1;transform:none;}
+.reveal-left{opacity:0;transform:translateX(-40px);transition:all .9s cubic-bezier(.16,1,.3,1);}
+.reveal-left.in{opacity:1;transform:none;}
+.reveal-right{opacity:0;transform:translateX(40px);transition:all .9s cubic-bezier(.16,1,.3,1);}
+.reveal-right.in{opacity:1;transform:none;}
 
-    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
-    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
-    .reveal { opacity:0; transform:translateY(18px); transition:opacity 0.5s,transform 0.5s; }
-    .reveal.visible { opacity:1; transform:translateY(0); }
+/* ── ABOUT ── */
+#about{background:linear-gradient(180deg,var(--c0),var(--c1),var(--c0));}
+.about-grid{display:grid;grid-template-columns:1fr 1.1fr;gap:4rem;align-items:start;}
 
-    ::-webkit-scrollbar { width:5px; }
-    ::-webkit-scrollbar-track { background:var(--bg); }
-    ::-webkit-scrollbar-thumb { background:var(--border); }
-    ::-webkit-scrollbar-thumb:hover { background:var(--green); }
+.profile-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:28px;padding:2.5rem;position:relative;overflow:hidden;}
+.profile-card::before{content:'';position:absolute;top:-80px;right:-80px;width:220px;height:220px;background:radial-gradient(circle,rgba(0,245,196,0.1),transparent 70%);}
+.profile-card::after{content:'';position:absolute;bottom:-80px;left:-80px;width:220px;height:220px;background:radial-gradient(circle,rgba(124,58,237,0.1),transparent 70%);}
 
-    @media(max-width:900px){
-      nav { padding:0 1rem; }
-      .nav-tabs { display:none; }
-      #hero { grid-template-columns:1fr; padding:5rem 1.5rem 3rem; }
-      section { padding:4rem 1.5rem; }
-      .about-grid,.contact-grid,.edu-grid { grid-template-columns:1fr; }
-      .ei { grid-template-columns:1fr; }
-      .ei-meta { border-right:none; border-bottom:1px solid var(--border2); padding-right:0; padding-bottom:1rem; }
-      .lang-grid { grid-template-columns:1fr 1fr; }
-      footer { flex-direction:column; gap:0.4rem; }
-    }
-  </style>
+/* Profile photo */
+.profile-photo-wrap{position:relative;width:120px;height:120px;margin-bottom:1.6rem;}
+.profile-photo-wrap::before{content:'';position:absolute;inset:-4px;border-radius:50%;background:conic-gradient(var(--accent),var(--accent2),var(--accent3),var(--accent));z-index:0;animation:spin 5s linear infinite;}
+.profile-photo-wrap::after{content:'';position:absolute;inset:-1px;border-radius:50%;background:var(--c1);z-index:1;}
+.profile-photo{width:100%;height:100%;border-radius:50%;object-fit:cover;object-position:center top;position:relative;z-index:2;display:block;}
+@keyframes spin{from{transform:rotate(0);}to{transform:rotate(360deg);}}
+
+.profile-name{font-family:'Syne',sans-serif;font-weight:800;font-size:1.65rem;margin-bottom:.3rem;}
+.profile-title{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--accent);margin-bottom:1.2rem;opacity:.85;}
+.profile-meta{display:flex;flex-direction:column;gap:.65rem;}
+.meta-item{display:flex;align-items:center;gap:.8rem;font-size:.84rem;color:var(--txt2);}
+.meta-item i{width:15px;color:var(--accent);font-size:.78rem;}
+.meta-item a{color:var(--txt2);text-decoration:none;transition:color .2s;}
+.meta-item a:hover{color:var(--accent);}
+
+.lang-sec{margin-top:1.5rem;}
+.lang-title{font-size:.68rem;color:var(--txt2);margin-bottom:.65rem;text-transform:uppercase;letter-spacing:.1em;}
+.lang-chips{display:flex;flex-wrap:wrap;gap:.5rem;}
+.chip{padding:.35rem .9rem;border-radius:100px;font-size:.72rem;font-weight:500;background:var(--glass);border:1px solid var(--glass-border);transition:all .25s;}
+.chip:hover{border-color:var(--accent);color:var(--accent);}
+
+.about-details{}
+.about-details h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.1rem;margin-bottom:1.3rem;color:var(--txt);}
+.edu-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:16px;padding:1.4rem;margin-bottom:.9rem;transition:all .3s;position:relative;overflow:hidden;}
+.edu-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:linear-gradient(180deg,var(--accent),var(--accent2));border-radius:2px;}
+.edu-card:hover{border-color:rgba(0,245,196,0.2);transform:translateX(4px);}
+.edu-icon{width:38px;height:38px;border-radius:10px;background:rgba(0,245,196,0.08);display:flex;align-items:center;justify-content:center;color:var(--accent);margin-bottom:.9rem;font-size:.85rem;}
+.edu-degree{font-weight:600;font-size:.9rem;margin-bottom:.25rem;}
+.edu-school{color:var(--accent);font-size:.8rem;margin-bottom:.18rem;}
+.edu-period{color:var(--txt2);font-size:.7rem;font-family:'JetBrains Mono',monospace;}
+.about-para{font-size:.9rem;line-height:1.85;color:var(--txt2);margin-top:1.3rem;padding:1.4rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;border-left:2px solid rgba(0,245,196,0.25);}
+
+/* ── EXPERIENCE ── */
+#experience{background:var(--c0);}
+.timeline{position:relative;max-width:920px;margin:0 auto;}
+.timeline::before{content:'';position:absolute;left:50%;top:0;bottom:0;width:1px;background:linear-gradient(180deg,transparent,var(--accent),var(--accent2),var(--accent3),transparent);transform:translateX(-50%);}
+.tl-item{display:flex;gap:3rem;margin-bottom:4rem;position:relative;align-items:flex-start;}
+.tl-item:nth-child(even){flex-direction:row-reverse;}
+.tl-content{flex:1;background:var(--glass);border:1px solid var(--glass-border);border-radius:20px;padding:2rem;transition:all .4s;position:relative;}
+.tl-content:hover{border-color:rgba(0,245,196,0.22);box-shadow:0 20px 60px -20px rgba(0,245,196,0.1);transform:translateY(-4px);}
+.tl-dot{position:absolute;left:50%;top:2rem;width:13px;height:13px;border-radius:50%;background:var(--accent);border:3px solid var(--c0);transform:translateX(-50%);box-shadow:0 0 0 4px rgba(0,245,196,0.12),0 0 24px rgba(0,245,196,0.45);z-index:1;}
+.tl-item:nth-child(2) .tl-dot{background:var(--accent2);box-shadow:0 0 0 4px rgba(124,58,237,0.12),0 0 24px rgba(124,58,237,0.45);}
+.tl-item:nth-child(3) .tl-dot{background:var(--accent3);box-shadow:0 0 0 4px rgba(244,63,94,0.12),0 0 24px rgba(244,63,94,0.45);}
+.tl-item:nth-child(4) .tl-dot{background:var(--gold);box-shadow:0 0 0 4px rgba(251,191,36,0.12),0 0 24px rgba(251,191,36,0.4);}
+.tl-spacer{flex:1;}
+.tl-badge{font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:.6rem;display:inline-block;background:rgba(0,245,196,0.07);padding:.2rem .65rem;border-radius:100px;border:1px solid rgba(0,245,196,0.14);}
+.tl-item:nth-child(2) .tl-badge{color:var(--accent2);background:rgba(124,58,237,0.07);border-color:rgba(124,58,237,0.14);}
+.tl-item:nth-child(3) .tl-badge{color:var(--accent3);background:rgba(244,63,94,0.07);border-color:rgba(244,63,94,0.14);}
+.tl-item:nth-child(4) .tl-badge{color:var(--gold);background:rgba(251,191,36,0.07);border-color:rgba(251,191,36,0.14);}
+.tl-role{font-family:'Syne',sans-serif;font-weight:700;font-size:1.05rem;margin-bottom:.28rem;}
+.tl-company{color:var(--txt2);font-size:.85rem;margin-bottom:.35rem;}
+.tl-period{font-family:'JetBrains Mono',monospace;font-size:.7rem;color:var(--txt2);margin-bottom:.9rem;opacity:.65;}
+.tl-desc{font-size:.85rem;line-height:1.78;color:var(--txt2);}
+.tl-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.1rem;}
+.tl-tag{padding:.25rem .7rem;border-radius:100px;font-size:.67rem;background:var(--glass);border:1px solid var(--glass-border);color:var(--txt2);}
+
+/* ── PROJECTS ── */
+#projects{background:linear-gradient(180deg,var(--c0),var(--c1),var(--c0));}
+.proj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;}
+.proj-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:22px;overflow:hidden;transition:all .4s cubic-bezier(.16,1,.3,1);cursor:none;position:relative;}
+.proj-card:hover{border-color:rgba(0,245,196,0.22);transform:translateY(-8px) scale(1.01);box-shadow:0 30px 70px -20px rgba(0,0,0,.6),0 0 60px -30px rgba(0,245,196,0.18);}
+.proj-card.featured{grid-column:span 2;}
+.proj-visual{height:160px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.proj-card.featured .proj-visual{height:195px;}
+.proj-mini-canvas{position:absolute;inset:0;width:100%;height:100%;}
+.proj-icon{font-size:2.5rem;z-index:1;opacity:.55;transition:all .4s;}
+.proj-card:hover .proj-icon{opacity:1;transform:scale(1.15) rotate(5deg);}
+.proj-body{padding:1.55rem;}
+.proj-num{font-family:'JetBrains Mono',monospace;font-size:.65rem;color:var(--txt2);margin-bottom:.5rem;opacity:.45;}
+.proj-name{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.55rem;transition:color .3s;}
+.proj-card:hover .proj-name{color:var(--accent);}
+.proj-context{font-size:.66rem;color:var(--accent2);margin-bottom:.5rem;font-family:'JetBrains Mono',monospace;opacity:.8;}
+.proj-desc{font-size:.8rem;line-height:1.72;color:var(--txt2);margin-bottom:1rem;}
+.proj-stack{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.2rem;}
+.proj-tech{padding:.24rem .65rem;border-radius:100px;font-size:.66rem;background:rgba(0,245,196,0.05);border:1px solid rgba(0,245,196,0.14);color:var(--accent);}
+.proj-link{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;font-weight:500;color:var(--accent);text-decoration:none;transition:gap .25s;}
+.proj-link:hover{gap:.65rem;}
+.proj-private{font-size:.78rem;color:var(--txt2);display:flex;align-items:center;gap:.4rem;}
+
+/* ── SKILLS ── */
+#skills{background:var(--c0);}
+.skills-grid{display:grid;grid-template-columns:1fr 1fr;gap:4rem;}
+.skill-group h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.7rem;color:var(--txt2);display:flex;align-items:center;gap:.65rem;}
+.skill-group h3 i{color:var(--accent);font-size:.85rem;}
+.skill-item{margin-bottom:1.6rem;}
+.skill-header{display:flex;justify-content:space-between;margin-bottom:.6rem;}
+.skill-name{font-weight:500;font-size:.86rem;display:flex;align-items:center;gap:.5rem;}
+.skill-pct{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--accent);}
+.skill-track{height:2.5px;background:rgba(255,255,255,0.05);border-radius:4px;overflow:visible;position:relative;}
+.skill-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;transition:width 1.6s cubic-bezier(.16,1,.3,1);position:relative;}
+.skill-fill::after{content:'';position:absolute;right:-3px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 10px var(--accent),0 0 20px rgba(0,245,196,0.4);}
+.tech-cloud{display:flex;flex-wrap:wrap;gap:.6rem;padding:1.6rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:18px;margin-top:1.6rem;}
+.tech-pill{padding:.42rem .95rem;border-radius:100px;font-size:.76rem;font-weight:500;background:var(--glass);border:1px solid var(--glass-border);color:var(--txt2);transition:all .28s;display:flex;align-items:center;gap:.4rem;}
+.tech-pill:hover{border-color:var(--accent);color:var(--accent);background:rgba(0,245,196,0.05);}
+.soft-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:1.3rem;}
+.soft-card{background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;padding:1.3rem;text-align:center;transition:all .28s;}
+.soft-card:hover{border-color:var(--accent2);background:rgba(124,58,237,0.05);transform:translateY(-2px);}
+.soft-card i{font-size:1.35rem;margin-bottom:.55rem;color:var(--accent2);display:block;}
+.soft-card p{font-size:.8rem;font-weight:500;}
+
+/* ── CONTACT ── */
+#contact{background:linear-gradient(180deg,var(--c0),var(--c1));}
+.contact-grid{display:grid;grid-template-columns:1fr 1.15fr;gap:4rem;max-width:980px;margin:0 auto;}
+.contact-text h3{font-family:'Syne',sans-serif;font-weight:700;font-size:1.6rem;margin-bottom:.9rem;line-height:1.2;}
+.contact-text p{color:var(--txt2);line-height:1.82;margin-bottom:1.8rem;font-size:.9rem;}
+.contact-items{display:flex;flex-direction:column;gap:1rem;}
+.contact-row{display:flex;align-items:center;gap:1rem;padding:.95rem 1.2rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;transition:all .3s;}
+.contact-row:hover{border-color:rgba(0,245,196,0.22);}
+.contact-icon{width:40px;height:40px;border-radius:11px;background:rgba(0,245,196,0.07);display:flex;align-items:center;justify-content:center;color:var(--accent);font-size:.9rem;flex-shrink:0;}
+.contact-info .clabel{font-size:.68rem;color:var(--txt2);margin-bottom:.15rem;text-transform:uppercase;letter-spacing:.09em;}
+.contact-info .cvalue{font-size:.86rem;font-weight:500;}
+.social-links{display:flex;flex-direction:column;gap:.75rem;}
+.social-link{display:flex;align-items:center;gap:1rem;padding:.95rem 1.3rem;background:var(--glass);border:1px solid var(--glass-border);border-radius:14px;text-decoration:none;color:var(--txt);transition:all .3s;}
+.social-link:hover{border-color:rgba(0,245,196,0.28);transform:translateX(6px);background:rgba(0,245,196,0.03);}
+.social-link i{font-size:1rem;color:var(--txt2);width:20px;transition:color .3s;}
+.social-link:hover i{color:var(--accent);}
+.social-link .sname{font-weight:600;font-size:.86rem;}
+.social-link .shandle{font-size:.75rem;color:var(--txt2);}
+.social-link .sarrow{margin-left:auto;color:var(--txt2);font-size:.75rem;transition:all .3s;}
+.social-link:hover .sarrow{color:var(--accent);transform:translateX(4px);}
+
+/* ── FOOTER ── */
+footer{padding:2.2rem 6vw;border-top:1px solid var(--glass-border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;}
+.footer-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.1rem;background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+footer p{font-size:.75rem;color:var(--txt2);}
+.back-top{width:36px;height:36px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;color:var(--txt2);text-decoration:none;transition:all .3s;font-size:.8rem;}
+.back-top:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-3px);}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  #cur-dot,#cur-ring{display:none;}body{cursor:auto;}
+  .menu-btn{display:block;}.nav-links,.nav-cta{display:none;}
+  .hero-3d-wrap{display:none;}.about-grid,.skills-grid,.contact-grid{grid-template-columns:1fr;}
+  .proj-grid{grid-template-columns:1fr;}.proj-card.featured{grid-column:span 1;}
+  .timeline::before{left:18px;}.tl-item,.tl-item:nth-child(even){flex-direction:column;padding-left:2.8rem;}.tl-dot{left:18px;}.tl-spacer{display:none;}
+  .hero-stats{grid-template-columns:repeat(2,1fr);}
+  .soft-grid{grid-template-columns:1fr 1fr;}
+}
+</style>
 </head>
 <body>
-<div id="cursor-trail"></div><div id="cursor-dot"></div><div id="cursor"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="22" height="15" rx="2" fill="#161b22" stroke="#39d353" stroke-width="1.5"/><rect x="6" y="6" width="18" height="11" rx="1" fill="#1c2128"/><line x1="8" y1="9" x2="14" y2="9" stroke="#58a6ff" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="11.5" x2="18" y2="11.5" stroke="#f0883e" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="14" x2="12" y2="14" stroke="#39d353" stroke-width="1.2" stroke-linecap="round"/><rect x="13" y="13" width="1.2" height="2" fill="#39d353"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect><rect x="2" y="19" width="26" height="3" rx="1" fill="#161b22" stroke="#39d353" stroke-width="1.2"/><rect x="11" y="20" width="8" height="1.5" rx="0.5" fill="#30363d"/><line x1="4" y1="19" x2="26" y2="19" stroke="#39d353" stroke-width="0.5" opacity="0.4"/></svg></div>
+<div id="cur-dot"></div>
+<div id="cur-ring"></div>
+<div id="sprogress"></div>
+<canvas id="bg-canvas"></canvas>
 
-<!-- NAV -->
-<nav>
-  <div class="nav-tabs">
-    <a href="#hero"       class="nav-tab active"><span class="n-dot nd-g"></span>portfolio.js</a>
-    <a href="#experience" class="nav-tab"><span class="n-dot nd-b"></span>experience.ts</a>
-    <a href="#projects"   class="nav-tab"><span class="n-dot nd-p"></span>projects.php</a>
-    <a href="#education"  class="nav-tab"><span class="n-dot nd-o"></span>education.md</a>
-    <a href="#contact"    class="nav-tab">contact.json</a>
-  </div>
-  <div class="nav-right">
-    <span class="nav-branch">⎇ main</span>
-    <span>mukesh@portfolio:~$</span>
-  </div>
+<nav id="navbar">
+  <div class="nav-logo">MM</div>
+  <ul class="nav-links">
+    <li><a href="#hero">Home</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#experience">Experience</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <a href="#contact" class="nav-cta"><span>Hire Me</span></a>
+  <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
 </nav>
 
-<!-- HERO -->
+<!-- ══ HERO ══ -->
 <section id="hero">
-  <div class="hero-glow"></div>
-
-  <div class="t-win">
-    <div class="t-bar">
-      <div class="tb tb-r"></div><div class="tb tb-y"></div><div class="tb tb-g"></div>
-      <span class="t-bar-title">~/mukesh-mandal — zsh</span>
+  <div class="hero-content">
+    <div class="hero-badge"><span class="badge-dot"></span>Open to Work</div>
+    <h1 class="hero-name">
+      <span class="l1">Mukesh</span>
+      <span class="l2">Mandal</span>
+    </h1>
+    <div class="hero-role"><span id="typed"></span><span class="cursor-blink"></span></div>
+    <p class="hero-desc">Full Stack Web Developer from Kathmandu, Nepal 🇳🇵 — crafting fast, scalable government-grade applications using Laravel, Vue.js &amp; Nuxt.js with precision and passion.</p>
+    <div class="hero-actions">
+      <a href="#projects" class="btn-primary">View My Work</a>
+      <a href="#contact" class="btn-ghost">Get In Touch</a>
     </div>
-    <div class="t-body">
-      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="tc">cat developer.json</span></div>
-      <div class="t-gap"></div>
-      <span class="to"><span class="tpunc">{</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"name"</span><span class="tpunc">:</span> <span class="ts">"Mukesh Mandal"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"role"</span><span class="tpunc">:</span> <span class="ts">"Full Stack Developer"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"company"</span><span class="tpunc">:</span> <span class="ts">"Trilokiya Tech"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"current_project"</span><span class="tpunc">:</span> <span class="ts">"GRC System"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"location"</span><span class="tpunc">:</span> <span class="ts">"Kathmandu, Nepal 🇳🇵"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"experience"</span><span class="tpunc">:</span> <span class="tv">"2+ years"</span><span class="tpunc">,</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"stack"</span><span class="tpunc">:</span> <span class="tpunc">[</span><span class="ts">"Laravel"</span><span class="tpunc">,</span> <span class="ts">"Vue.js"</span><span class="tpunc">,</span> <span class="ts">"Nuxt.js"</span><span class="tpunc">,</span> <span class="ts">"Quasar"</span><span class="tpunc">],</span></span>
-      <span class="to">&nbsp;&nbsp;<span class="tk">"open_to_work"</span><span class="tpunc">:</span> <span class="tv">true</span></span>
-      <span class="to"><span class="tpunc">}</span></span>
-      <div class="t-gap"></div>
-      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="tc">git log --oneline -4</span></div>
-      <div class="t-gap"></div>
-      <span class="to"><span style="color:var(--yellow)">f2c91a3</span> feat: GRC compliance module @ Trilokiya</span>
-      <span class="to"><span style="color:var(--yellow)">b7d2e44</span> feat: Digital Nepal LMS — course engine</span>
-      <span class="to"><span style="color:var(--yellow)">a9e103f</span> fix: NEA Gunaso complaint tracker</span>
-      <span class="to"><span style="color:var(--yellow)">c3810bc</span> feat: Nepal Immigration portal modules</span>
-      <div class="t-gap"></div>
-      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="t-csr"></span></div>
+    <div class="hero-socials">
+      <a href="https://github.com/muku9812" target="_blank" title="GitHub"><i class="fab fa-github"></i></a>
+      <a href="https://www.linkedin.com/in/mukesh-mandal-20b7a539b" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+      <a href="https://www.facebook.com/mukesh.mandal.986677" target="_blank" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+      <a href="mailto:Mukesh986677@gmail.com" title="Email"><i class="fas fa-envelope"></i></a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><div class="stat-num">2+</div><div class="stat-label">Yrs Exp.</div></div>
+      <div class="stat-item"><div class="stat-num">10+</div><div class="stat-label">Projects</div></div>
+      <div class="stat-item"><div class="stat-num">5+</div><div class="stat-label">Gov Portals</div></div>
+      <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Companies</div></div>
     </div>
   </div>
-
-  <div class="hero-right">
-    <div class="stat-cards">
-      <div class="sc"><div class="sc-num">2+</div><div class="sc-label">Years experience</div></div>
-      <div class="sc"><div class="sc-num">10+</div><div class="sc-label">Projects shipped</div></div>
-      <div class="sc"><div class="sc-num">5+</div><div class="sc-label">Gov. portals built</div></div>
-      <div class="sc"><div class="sc-num">3</div><div class="sc-label">Companies worked</div></div>
-    </div>
-    <div class="contrib-box">
-      <div class="cb-title">// contribution activity</div>
-      <div class="cb-grid" id="contrib-grid"></div>
-    </div>
-    <div class="tech-box">
-      <div class="tech-title">// tech proficiency</div>
-      <div class="tech-bars">
-        <div class="tbr"><span class="tbn">PHP/Laravel</span><div class="tbt"><div class="tbf" style="width:92%;background:var(--orange)"></div></div><span class="tbp">92%</span></div>
-        <div class="tbr"><span class="tbn">Vue.js</span><div class="tbt"><div class="tbf" style="width:88%;background:var(--green)"></div></div><span class="tbp">88%</span></div>
-        <div class="tbr"><span class="tbn">Nuxt.js</span><div class="tbt"><div class="tbf" style="width:85%;background:var(--blue)"></div></div><span class="tbp">85%</span></div>
-        <div class="tbr"><span class="tbn">Quasar</span><div class="tbt"><div class="tbf" style="width:82%;background:var(--purple)"></div></div><span class="tbp">82%</span></div>
-        <div class="tbr"><span class="tbn">MySQL</span><div class="tbt"><div class="tbf" style="width:60%;background:var(--yellow)"></div></div><span class="tbp">60%</span></div>
-      </div>
-    </div>
-    <div class="hero-ctas">
-      <a href="#projects" class="btn-p">$ view --projects</a>
-      <a href="#contact"  class="btn-o">$ git contact</a>
-    </div>
-  </div>
+  <div class="hero-3d-wrap" id="hero3dWrap"></div>
 </section>
 
-<!-- ABOUT -->
+<!-- ══ ABOUT ══ -->
 <section id="about">
-  <div class="sh reveal">
-    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">about.ts</span></div>
-    <div class="st">About <span class="hl-g">me</span></div>
-  </div>
-  <div class="about-grid">
-    <div class="cb reveal">
-      <div class="cbh">📄 about.ts</div>
-      <div class="cbb">
-        <div><span class="ln">1</span><span class="kw">const</span> <span class="fn">developer</span> <span class="punc">= {</span></div>
-        <div><span class="ln">2</span>&nbsp;&nbsp;<span class="prop">name</span><span class="punc">:</span> <span class="str2">"Mukesh Mandal"</span><span class="punc">,</span></div>
-        <div><span class="ln">3</span>&nbsp;&nbsp;<span class="prop">based</span><span class="punc">:</span> <span class="str2">"New Baneshwor, Kathmandu"</span><span class="punc">,</span></div>
-        <div><span class="ln">4</span>&nbsp;&nbsp;<span class="prop">degree</span><span class="punc">:</span> <span class="str2">"BIM — Orchid Int'l College"</span><span class="punc">,</span></div>
-        <div><span class="ln">5</span>&nbsp;&nbsp;<span class="prop">company</span><span class="punc">:</span> <span class="str2">"Trilokiya Tech"</span><span class="punc">,</span></div>
-        <div><span class="ln">6</span>&nbsp;&nbsp;<span class="prop">focus</span><span class="punc">:</span> <span class="str2">"GRC Systems"</span><span class="punc">,</span></div>
-        <div><span class="ln">7</span>&nbsp;&nbsp;<span class="prop">passion</span><span class="punc">: [</span></div>
-        <div><span class="ln">8</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Government digital portals"</span><span class="punc">,</span></div>
-        <div><span class="ln">9</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Full-stack Laravel + Vue"</span><span class="punc">,</span></div>
-        <div><span class="ln">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Clean scalable REST APIs"</span></div>
-        <div><span class="ln">11</span>&nbsp;&nbsp;<span class="punc">],</span></div>
-        <div><span class="ln">12</span>&nbsp;&nbsp;<span class="prop">openToWork</span><span class="punc">:</span> <span class="num">true</span></div>
-        <div><span class="ln">13</span><span class="punc">}</span></div>
-        <div>&nbsp;</div>
-        <div><span class="ln">15</span><span class="cm">// Started as a Laravel intern in 2023.</span></div>
-        <div><span class="ln">16</span><span class="cm">// Now shipping gov-grade systems used</span></div>
-        <div><span class="ln">17</span><span class="cm">// by thousands of Nepali citizens.</span></div>
-      </div>
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-tag">// who I am</div>
+      <h2 class="sec-title">About <span>Me</span></h2>
+      <div class="sec-line"></div>
     </div>
-    <div class="cb reveal">
-      <div class="cbh">📦 skills.json</div>
-      <div class="cbb" style="padding:0.4rem 0">
-        <div class="skill-rows">
-          <div class="sr"><span class="sr-icon" style="color:var(--orange)">▸</span><span class="sr-name">PHP / Laravel</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Vue.js</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--blue)">▸</span><span class="sr-name">Nuxt.js</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--purple)">▸</span><span class="sr-name">Quasar Framework</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Tailwind CSS</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--blue)">▸</span><span class="sr-name">HTML / CSS</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Laravel Livewire</span><span class="sr-lv lv-b">basic</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--orange)">▸</span><span class="sr-name">RESTful APIs</span><span class="sr-lv lv-e">expert</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--yellow)">▸</span><span class="sr-name">MySQL</span><span class="sr-lv lv-m">proficient</span></div>
-          <div class="sr"><span class="sr-icon" style="color:var(--text-dim)">▸</span><span class="sr-name">MS Office</span><span class="sr-lv lv-b">basic</span></div>
+    <div class="about-grid">
+      <div class="reveal-left">
+        <div class="profile-card">
+          <div class="profile-photo-wrap">
+            <img src="profile.jpg" alt="Mukesh Mandal" class="profile-photo">
+          </div>
+          <div class="profile-name">Mukesh Mandal</div>
+          <div class="profile-title">// full_stack_developer.php</div>
+          <div class="profile-meta">
+            <div class="meta-item"><i class="fas fa-map-marker-alt"></i> New Baneshwor, Kathmandu</div>
+            <div class="meta-item"><i class="fas fa-phone"></i> +977 9866775130</div>
+            <div class="meta-item"><i class="fas fa-envelope"></i> Mukesh986677@gmail.com</div>
+            <div class="meta-item"><i class="fas fa-globe"></i> <a href="https://mandalmukesh.com.np" target="_blank">mandalmukesh.com.np</a></div>
+            <div class="meta-item"><i class="fab fa-github"></i> <a href="https://github.com/muku9812" target="_blank">github.com/muku9812</a></div>
+          </div>
+          <div class="lang-sec">
+            <div class="lang-title">Languages</div>
+            <div class="lang-chips">
+              <span class="chip">Nepali 🇳🇵 Native</span>
+              <span class="chip">Hindi Fluent</span>
+              <span class="chip">English Professional</span>
+              <span class="chip">Bengali Conversational</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="about-details">
+          <h3>Education</h3>
+          <div class="edu-card">
+            <div class="edu-icon"><i class="fas fa-graduation-cap"></i></div>
+            <div class="edu-degree">Bachelor of Information Management (BIM)</div>
+            <div class="edu-school">Orchid International College, Kathmandu</div>
+            <div class="edu-period">Nov 2017 → June 2022</div>
+          </div>
+          <div class="edu-card" style="border-left-color:rgba(124,58,237,0.7)">
+            <div class="edu-icon" style="background:rgba(124,58,237,0.1);color:var(--accent2);"><i class="fas fa-school"></i></div>
+            <div class="edu-degree">+2 — Management &amp; Computer Science</div>
+            <div class="edu-school">Himalaya Higher Secondary School, Damak, Jhapa</div>
+            <div class="edu-period">June 2015 → August 2017</div>
+          </div>
+          <div class="edu-card" style="border-left-color:rgba(244,63,94,0.7)">
+            <div class="edu-icon" style="background:rgba(244,63,94,0.1);color:var(--accent3);"><i class="fas fa-school"></i></div>
+            <div class="edu-degree">School Leaving Certificate (SLC)</div>
+            <div class="edu-school">Saraswati Secondary School, Damak, Jhapa</div>
+            <div class="edu-period">2013 → 2015</div>
+          </div>
+          <div class="about-para">I'm a passionate Full Stack Developer with 2+ years of professional experience building production-grade web applications — including large-scale government digital portals used by thousands of Nepali citizens. I specialize in the Laravel + Vue.js ecosystem, take pride in writing clean maintainable code, and love turning complex problems into elegant digital solutions. Currently working on GRC (Governance, Risk &amp; Compliance) systems at Trilokiya Tech.</div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- EXPERIENCE -->
+<!-- ══ EXPERIENCE ══ -->
 <section id="experience">
-  <div class="sh reveal">
-    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">experience.ts</span></div>
-    <div class="st">Work <span class="hl-g">History</span></div>
-  </div>
-  <div class="exp-list">
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-tag">// career path</div>
+      <h2 class="sec-title">Work <span>Experience</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="timeline">
 
-    <div class="ei ei-current">
-      <div class="ei-meta">
-        <div class="ei-date">Feb 2025 — Present<br><span style="color:var(--green);font-size:0.58rem">● CURRENT</span></div>
-        <div class="ei-company">Trilokiya Tech</div>
-        <div class="ei-loc">📍 Kathmandu</div>
+      <div class="tl-item reveal">
+        <div class="tl-content">
+          <span class="tl-badge">● Current</span>
+          <div class="tl-role">Full Stack Web Developer</div>
+          <div class="tl-company"><i class="fas fa-building" style="font-size:.74rem;margin-right:.4rem;"></i>Trilokiya Tech — Kathmandu, Nepal</div>
+          <div class="tl-period">Feb 2025 → Present</div>
+          <div class="tl-desc">Working on the GRC (Governance, Risk &amp; Compliance) system — building risk assessment modules, compliance checklist workflows, audit trails, and management reporting dashboards for enterprise clients.</div>
+          <div class="tl-tags"><span class="tl-tag">Laravel</span><span class="tl-tag">Vue.js</span><span class="tl-tag">Nuxt.js</span><span class="tl-tag">GRC</span><span class="tl-tag">Risk Management</span><span class="tl-tag">REST API</span></div>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-spacer"></div>
       </div>
-      <div>
-        <div class="ei-role">Full Stack Web Developer</div>
-        <div class="ei-desc">Working on the GRC (Governance, Risk &amp; Compliance) system — building risk assessment modules, compliance checklist workflows, audit trails, and management reporting dashboards for enterprise clients.</div>
-        <div class="ei-chips">
-          <span class="chip chip-cur">Laravel</span>
-          <span class="chip chip-cur">Vue.js</span>
-          <span class="chip chip-cur">Nuxt.js</span>
-          <span class="chip chip-cur">GRC</span>
-          <span class="chip chip-cur">Risk Management</span>
+
+      <div class="tl-item reveal" style="transition-delay:.12s">
+        <div class="tl-spacer"></div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <span class="tl-badge">Full Stack</span>
+          <div class="tl-role">Full Stack Web Developer</div>
+          <div class="tl-company"><i class="fas fa-building" style="font-size:.74rem;margin-right:.4rem;"></i>Yaj Tech — Kathmandu, Nepal</div>
+          <div class="tl-period">Aug 2024 → Feb 2025</div>
+          <div class="tl-desc">Delivered large-scale government digital initiatives — built the Digital Nepal LMS platform, contributed to Nepal Immigration Portal, NEA Gunaso complaint system, Hello Sarkar grievance portal, Online Registration System, and Darta Chalani document management system.</div>
+          <div class="tl-tags"><span class="tl-tag">Laravel</span><span class="tl-tag">Vue.js</span><span class="tl-tag">Nuxt.js</span><span class="tl-tag">Quasar</span><span class="tl-tag">Gov Portals</span><span class="tl-tag">LMS</span></div>
         </div>
       </div>
-    </div>
 
-    <div class="ei">
-      <div class="ei-meta">
-        <div class="ei-date">Aug 2024 — Feb 2025</div>
-        <div class="ei-company">Yaj Tech</div>
-        <div class="ei-loc">📍 Kathmandu</div>
+      <div class="tl-item reveal" style="transition-delay:.24s">
+        <div class="tl-content">
+          <span class="tl-badge">Junior Dev</span>
+          <div class="tl-role">Laravel Junior Developer</div>
+          <div class="tl-company"><i class="fas fa-building" style="font-size:.74rem;margin-right:.4rem;"></i>Freelancer Unit Pvt. Ltd — Kathmandu</div>
+          <div class="tl-period">Apr 2023 → Aug 2023</div>
+          <div class="tl-desc">Promoted from intern to junior developer. Built Laravel features for production projects, collaborated with senior team on client deliverables including news portals and booking platforms.</div>
+          <div class="tl-tags"><span class="tl-tag">Laravel</span><span class="tl-tag">PHP</span><span class="tl-tag">MySQL</span><span class="tl-tag">Livewire</span></div>
+        </div>
+        <div class="tl-dot"></div>
+        <div class="tl-spacer"></div>
       </div>
-      <div>
-        <div class="ei-role">Full Stack Web Developer</div>
-        <div class="ei-desc">Delivered large-scale government digital initiatives — built the Digital Nepal LMS platform, contributed to Nepal Immigration Portal, the NEA Gunaso complaint system, Hello Sarkar grievance portal, Online Registration System, and Darta Chalani document management system using Laravel, Vue.js, and Nuxt.js.</div>
-        <div class="ei-chips">
-          <span class="chip">Laravel</span>
-          <span class="chip">Vue.js</span>
-          <span class="chip">Nuxt.js</span>
-          <span class="chip">Gov Portals</span>
-          <span class="chip">LMS</span>
-          <span class="chip">Quasar</span>
+
+      <div class="tl-item reveal" style="transition-delay:.36s">
+        <div class="tl-spacer"></div>
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+          <span class="tl-badge">Internship</span>
+          <div class="tl-role">Laravel Intern</div>
+          <div class="tl-company"><i class="fas fa-building" style="font-size:.74rem;margin-right:.4rem;"></i>Freelancer Unit Pvt. Ltd — Kathmandu</div>
+          <div class="tl-period">Jan 2023 → Apr 2023</div>
+          <div class="tl-desc">Kickstarted professional career learning Laravel and Livewire fundamentals. Researched modern web development patterns and built foundational skills in PHP backend development under senior mentorship.</div>
+          <div class="tl-tags"><span class="tl-tag">Laravel</span><span class="tl-tag">Livewire</span><span class="tl-tag">Blade</span><span class="tl-tag">HTML/CSS</span></div>
         </div>
       </div>
-    </div>
 
-    <div class="ei">
-      <div class="ei-meta">
-        <div class="ei-date">Apr 2023 — Aug 2023</div>
-        <div class="ei-company">Freelancer Unit Pvt. Ltd</div>
-        <div class="ei-loc">📍 Kathmandu</div>
-      </div>
-      <div>
-        <div class="ei-role">Laravel Junior Developer</div>
-        <div class="ei-desc">Promoted from intern to junior developer. Built Laravel features for production projects, collaborated with senior team on client deliverables.</div>
-        <div class="ei-chips">
-          <span class="chip">Laravel</span>
-          <span class="chip">PHP</span>
-          <span class="chip">MySQL</span>
-        </div>
-      </div>
     </div>
-
-    <div class="ei">
-      <div class="ei-meta">
-        <div class="ei-date">Jan 2023 — Apr 2023</div>
-        <div class="ei-company">Freelancer Unit Pvt. Ltd</div>
-        <div class="ei-loc">📍 Kathmandu</div>
-      </div>
-      <div>
-        <div class="ei-role">Laravel Intern</div>
-        <div class="ei-desc">Learned Laravel and Livewire fundamentals, conducted research, and built foundational skills in PHP backend development.</div>
-        <div class="ei-chips">
-          <span class="chip">Laravel</span>
-          <span class="chip">Livewire</span>
-          <span class="chip">PHP</span>
-        </div>
-      </div>
-    </div>
-
   </div>
 </section>
 
-<!-- PROJECTS -->
+<!-- ══ PROJECTS ══ -->
 <section id="projects">
-  <div class="sh reveal">
-    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">projects.php</span></div>
-    <div class="st">Featured <span class="hl-b">Projects</span></div>
-  </div>
-  <div class="pg">
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">🛡️</span><span class="pc-num">01</span></div>
-      <div class="pc-name">GRC System</div>
-      <span class="pc-co co-t">@ Trilokiya Tech — Current</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Nuxt.js</span><span class="pt">Enterprise</span><span class="pt">GRC</span></div>
-      <div class="pc-desc">Governance, Risk &amp; Compliance platform for enterprise clients. Building risk assessment modules, compliance checklist workflows, audit trail systems, and executive reporting dashboards to manage regulatory requirements.</div>
-      <span class="pl-na">🔒 Internal / Confidential</span>
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-tag">// what I've built</div>
+      <h2 class="sec-title">Featured <span>Projects</span></h2>
+      <div class="sec-line"></div>
     </div>
+    <div class="proj-grid">
 
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">🎓</span><span class="pc-num">02</span></div>
-      <div class="pc-name">Digital Nepal LMS</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Nuxt.js</span><span class="pt">E-Learning</span><span class="pt">Government</span></div>
-      <div class="pc-desc">National-scale Learning Management System under the Digital Nepal initiative. Built course modules, enrollment flows, progress tracking dashboards, and role-based access for administrators, instructors, and government department learners nationwide.</div>
-      <span class="pl-na">🔒 Internal / Confidential</span>
+      <div class="proj-card featured reveal">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(0,245,196,0.07),rgba(124,58,237,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#00f5c4" data-c2="#7c3aed"></canvas>
+          <span class="proj-icon">🛡️</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">01 / enterprise</div>
+          <div class="proj-name">GRC System</div>
+          <div class="proj-context">@ Trilokiya Tech — Current</div>
+          <div class="proj-desc">Governance, Risk &amp; Compliance platform for enterprise clients. Building risk assessment modules, compliance checklist workflows, audit trail systems, and executive reporting dashboards to manage regulatory requirements.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Vue.js</span><span class="proj-tech">Nuxt.js</span><span class="proj-tech">Enterprise</span><span class="proj-tech">GRC</span></div>
+          <span class="proj-private"><i class="fas fa-lock"></i> Internal / Confidential</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.06s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(0,245,196,0.07),rgba(251,191,36,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#00f5c4" data-c2="#fbbf24"></canvas>
+          <span class="proj-icon">🎓</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">02 / government lms</div>
+          <div class="proj-name">Digital Nepal LMS</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">National-scale Learning Management System under Digital Nepal initiative. Built course modules, enrollment flows, progress tracking, and role-based access for nationwide learners.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Vue.js</span><span class="proj-tech">Nuxt.js</span><span class="proj-tech">E-Learning</span></div>
+          <span class="proj-private"><i class="fas fa-lock"></i> Internal / Confidential</span>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.1s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(124,58,237,0.09),rgba(244,63,94,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#7c3aed" data-c2="#f43f5e"></canvas>
+          <span class="proj-icon">✈️</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">03 / government</div>
+          <div class="proj-name">Nepal Immigration Portal</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">Contributed to Nepal's official immigration web application — developed modules for visa processing, traveler records, and border control digital workflows used by immigration officers nationwide.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Vue.js</span><span class="proj-tech">Government</span></div>
+          <a href="https://nepaliport.immigration.gov.np/" target="_blank" class="proj-link">↗ nepaliport.immigration.gov.np <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card featured reveal" style="transition-delay:.14s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(251,191,36,0.09),rgba(0,245,196,0.06));">
+          <canvas class="proj-mini-canvas" data-c1="#fbbf24" data-c2="#00f5c4"></canvas>
+          <span class="proj-icon">📰</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">04 / news portal</div>
+          <div class="proj-name">Tarai Khabar</div>
+          <div class="proj-context">@ Freelancer Unit</div>
+          <div class="proj-desc">Full-featured news portal with admin-controlled role assignment for editors, authors, and contributors. Multi-user publishing workflows, monthly post analytics, and category management with RBAC.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Livewire</span><span class="proj-tech">RBAC</span><span class="proj-tech">News Portal</span></div>
+          <a href="https://taraikhabar.com/" target="_blank" class="proj-link">↗ taraikhabar.com <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.18s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(244,63,94,0.09),rgba(251,191,36,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#f43f5e" data-c2="#fbbf24"></canvas>
+          <span class="proj-icon">⚡</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">05 / complaint mgmt</div>
+          <div class="proj-name">NEA Gunaso System</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">Complaint management system for Nepal Electricity Authority. Handles thousands of electricity-related complaints — submission, tracking, field officer assignment, and resolution reporting.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Backpack</span><span class="proj-tech">Nuxt.js</span><span class="proj-tech">Vue.js</span></div>
+          <a href="https://gunaso.nea.org.np/" target="_blank" class="proj-link">↗ gunaso.nea.org.np <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.22s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(0,245,196,0.07),rgba(244,63,94,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#00f5c4" data-c2="#f43f5e"></canvas>
+          <span class="proj-icon">🏛️</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">06 / grievance portal</div>
+          <div class="proj-name">Hello Sarkar (OPMCM)</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">Nepal's official OPMCM government grievance portal. Citizens submit complaints directly to government offices. Built complaint routing, notification systems, and departmental dashboards.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Vue.js</span><span class="proj-tech">Government</span></div>
+          <a href="https://gunaso.opmcm.gov.np/" target="_blank" class="proj-link">↗ gunaso.opmcm.gov.np <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.26s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(124,58,237,0.09),rgba(251,191,36,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#7c3aed" data-c2="#fbbf24"></canvas>
+          <span class="proj-icon">🖥️</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">07 / service portal</div>
+          <div class="proj-name">Online Registration — DoIT</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">Nepal government portal enabling departments to request services and devices from higher authorities digitally — reducing paper-based bureaucracy across government offices.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Quasar</span><span class="proj-tech">Gov Portal</span></div>
+          <a href="https://onlinesystem.doit.gov.np/" target="_blank" class="proj-link">↗ onlinesystem.doit.gov.np <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.3s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(251,191,36,0.09),rgba(124,58,237,0.07));">
+          <canvas class="proj-mini-canvas" data-c1="#fbbf24" data-c2="#7c3aed"></canvas>
+          <span class="proj-icon">📋</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">08 / document mgmt</div>
+          <div class="proj-name">Darta Chalani</div>
+          <div class="proj-context">@ Yaj Tech</div>
+          <div class="proj-desc">Document registration and dispatch tracking system for STT Nepal, streamlining inbound/outbound correspondence management and administrative workflows across office departments.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Backpack</span><span class="proj-tech">Registration</span></div>
+          <a href="https://dartachalani.sttnepal.com/" target="_blank" class="proj-link">↗ dartachalani.sttnepal.com <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.34s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(0,245,196,0.07),rgba(124,58,237,0.09));">
+          <canvas class="proj-mini-canvas" data-c1="#00f5c4" data-c2="#7c3aed"></canvas>
+          <span class="proj-icon">🏨</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">09 / booking</div>
+          <div class="proj-name">Coop Resort</div>
+          <div class="proj-context">@ Freelancer Unit</div>
+          <div class="proj-desc">Online room booking platform for a resort. Users browse availability and complete reservations online. Includes admin panel for room and booking management.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">Booking</span><span class="proj-tech">PHP</span></div>
+          <a href="https://coopresort.com/" target="_blank" class="proj-link">↗ coopresort.com <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+
+      <div class="proj-card reveal" style="transition-delay:.38s">
+        <div class="proj-visual" style="background:linear-gradient(135deg,rgba(244,63,94,0.09),rgba(0,245,196,0.06));">
+          <canvas class="proj-mini-canvas" data-c1="#f43f5e" data-c2="#00f5c4"></canvas>
+          <span class="proj-icon">📚</span>
+        </div>
+        <div class="proj-body">
+          <div class="proj-num">10 / academic</div>
+          <div class="proj-name">Library Management System</div>
+          <div class="proj-context">@ College Project (BIM)</div>
+          <div class="proj-desc">College capstone project — book cataloguing, member registration, borrow/return tracking, and fine calculation modules built with Laravel.</div>
+          <div class="proj-stack"><span class="proj-tech">Laravel</span><span class="proj-tech">PHP</span><span class="proj-tech">MySQL</span></div>
+          <a href="https://github.com/muku9812/summer-project" target="_blank" class="proj-link">↗ github.com/muku9812 <i class="fab fa-github"></i></a>
+        </div>
+      </div>
+
     </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">✈️</span><span class="pc-num">03</span></div>
-      <div class="pc-name">Nepal Immigration Portal</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Government</span><span class="pt">Immigration</span></div>
-      <div class="pc-desc">Contributed to Nepal's official immigration web application — developed and enhanced modules for visa processing, traveler record management, and border control digital workflows used by immigration officers nationwide.</div>
-      <a href="https://nepaliport.immigration.gov.np/" class="pl" target="_blank">↗ nepaliport.immigration.gov.np</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">⚡</span><span class="pc-num">04</span></div>
-      <div class="pc-name">NEA Gunaso System</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Backpack</span><span class="pt">Nuxt.js</span><span class="pt">Vue.js</span><span class="pt">Complaint Mgmt</span></div>
-      <div class="pc-desc">Complaint management system for Nepal Electricity Authority. Built complaint submission, status tracking, field officer assignment, and resolution reporting — handling thousands of electricity-related complaints from citizens across Nepal.</div>
-      <a href="https://gunaso.nea.org.np/" class="pl" target="_blank">↗ gunaso.nea.org.np</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">🏛️</span><span class="pc-num">05</span></div>
-      <div class="pc-name">Hello Sarkar (Gunaso)</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Government</span><span class="pt">Grievance</span></div>
-      <div class="pc-desc">Nepal's official OPMCM government grievance portal. Citizens submit complaints directly to government offices and track resolution. Worked on complaint routing, notification systems, and departmental dashboards.</div>
-      <a href="https://gunaso.opmcm.gov.np/" class="pl" target="_blank">↗ gunaso.opmcm.gov.np</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">🖥️</span><span class="pc-num">06</span></div>
-      <div class="pc-name">Online Registration System</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Quasar</span><span class="pt">Government</span><span class="pt">Service Portal</span></div>
-      <div class="pc-desc">Nepal government web application enabling departments to request services and devices from higher authorities digitally — reducing paper-based bureaucracy across government offices.</div>
-      <a href="https://onlinesystem.doit.gov.np/" class="pl" target="_blank">↗ onlinesystem.doit.gov.np</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">📋</span><span class="pc-num">07</span></div>
-      <div class="pc-name">Darta Chalani</div>
-      <span class="pc-co co-y">@ Yaj Tech</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Backpack</span><span class="pt">Registration</span><span class="pt">STT Nepal</span></div>
-      <div class="pc-desc">Document registration and dispatch tracking system for STT Nepal, streamlining inbound/outbound correspondence management and administrative workflows across office departments.</div>
-      <a href="https://dartachalani.sttnepal.com/" class="pl" target="_blank">↗ dartachalani.sttnepal.com</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">📰</span><span class="pc-num">08</span></div>
-      <div class="pc-name">Tarai Khabar</div>
-      <span class="pc-co co-f">@ Freelancer Unit</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Livewire</span><span class="pt">News Portal</span><span class="pt">RBAC</span></div>
-      <div class="pc-desc">Full-featured news portal with admin-controlled role assignment for editors, authors, and contributors. Multi-user publishing workflows, monthly post analytics, and category management.</div>
-      <a href="https://taraikhabar.com/" class="pl" target="_blank">↗ taraikhabar.com</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">🏨</span><span class="pc-num">09</span></div>
-      <div class="pc-name">Coop Resort</div>
-      <span class="pc-co co-f">@ Freelancer Unit</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Booking</span></div>
-      <div class="pc-desc">Online room booking platform for a resort. Users browse availability and complete reservations online. Includes admin panel for room and booking management.</div>
-      <a href="https://coopresort.com/" class="pl" target="_blank">↗ coopresort.com</a>
-    </div>
-
-    <div class="pc">
-      <div class="pc-top"><span class="pc-icon">📚</span><span class="pc-num">10</span></div>
-      <div class="pc-name">Library Management System</div>
-      <span class="pc-co co-f">@ College Project</span>
-      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">PHP</span><span class="pt">MySQL</span></div>
-      <div class="pc-desc">College capstone project built in Laravel — book cataloguing, member registration, borrow/return tracking, and fine calculation modules.</div>
-      <a href="https://github.com/muku9812/summer-project" class="pl" target="_blank">↗ github.com/muku9812</a>
-    </div>
-
   </div>
 </section>
 
-<!-- EDUCATION -->
-<section id="education">
-  <div class="sh reveal">
-    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">education.md</span></div>
-    <div class="st">Academic <span class="hl-g">Background</span></div>
-  </div>
-  <div class="edu-grid reveal">
-    <div class="edu-card">
-      <div class="edu-yr">Nov 2017 — June 2022</div>
-      <div class="edu-deg">Bachelor's in Information Management</div>
-      <div class="edu-sch">Orchid International College · Kathmandu</div>
-      <div class="edu-note">BIM — software development, databases, and information systems.</div>
+<!-- ══ SKILLS ══ -->
+<section id="skills">
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-tag">// tech stack</div>
+      <h2 class="sec-title">Technical <span>Skills</span></h2>
+      <div class="sec-line"></div>
     </div>
-    <div class="edu-card">
-      <div class="edu-yr">June 2015 — August 2017</div>
-      <div class="edu-deg">+2 — Management with Computer Science</div>
-      <div class="edu-sch">Himalaya Higher Secondary School · Damak, Jhapa</div>
-      <div class="edu-note">Management faculty with Computer Science — early computing foundation.</div>
-    </div>
-  </div>
-  <div class="lang-sec reveal">
-    <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:0.8rem">// languages spoken</div>
-    <div class="lang-grid">
-      <div class="lc"><div class="lc-name">Nepali</div><div class="lbt"><div class="lbf" style="width:95%;background:var(--green)"></div></div><div class="lc-lvl">Native</div></div>
-      <div class="lc"><div class="lc-name">Hindi</div><div class="lbt"><div class="lbf" style="width:75%;background:var(--blue)"></div></div><div class="lc-lvl">Fluent</div></div>
-      <div class="lc"><div class="lc-name">English</div><div class="lbt"><div class="lbf" style="width:65%;background:var(--orange)"></div></div><div class="lc-lvl">Professional</div></div>
-      <div class="lc"><div class="lc-name">Bangoli</div><div class="lbt"><div class="lbf" style="width:40%;background:var(--purple)"></div></div><div class="lc-lvl">Conversational</div></div>
-    </div>
-  </div>
-</section>
-
-<!-- CONTACT -->
-<section id="contact">
-  <div class="sh reveal">
-    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">contact.json</span></div>
-    <div class="st">Get in <span class="hl-g">Touch</span></div>
-  </div>
-  <div class="contact-grid">
-    <div class="t-win reveal">
-      <div class="t-bar">
-        <div class="tb tb-r"></div><div class="tb tb-y"></div><div class="tb tb-g"></div>
-        <span class="t-bar-title">contact.json</span>
+    <div class="skills-grid">
+      <div>
+        <div class="skill-group reveal">
+          <h3><i class="fas fa-star"></i> Core Stack</h3>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fab fa-laravel" style="color:#f43f5e;"></i> PHP / Laravel</span><span class="skill-pct">92%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="92"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fab fa-vuejs" style="color:#00f5c4;"></i> Vue.js</span><span class="skill-pct">88%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="88"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-leaf" style="color:#7c3aed;"></i> Nuxt.js</span><span class="skill-pct">85%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="85"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-layer-group" style="color:#00f5c4;"></i> Quasar Framework</span><span class="skill-pct">82%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="82"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fab fa-html5" style="color:#fbbf24;"></i> HTML / Tailwind CSS</span><span class="skill-pct">90%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="90"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-database" style="color:#fbbf24;"></i> MySQL</span><span class="skill-pct">72%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="72"></div></div>
+          </div>
+        </div>
+        <div class="tech-cloud reveal" style="transition-delay:.18s">
+          <span class="tech-pill"><i class="fab fa-git-alt" style="color:#f43f5e;"></i> Git</span>
+          <span class="tech-pill"><i class="fab fa-github"></i> GitHub</span>
+          <span class="tech-pill"><i class="fas fa-fire" style="color:#fbbf24;"></i> Livewire</span>
+          <span class="tech-pill"><i class="fas fa-server" style="color:#7c3aed;"></i> REST API</span>
+          <span class="tech-pill"><i class="fas fa-database" style="color:#7c3aed;"></i> Eloquent ORM</span>
+          <span class="tech-pill"><i class="fab fa-linux"></i> Linux</span>
+          <span class="tech-pill"><i class="fas fa-cube" style="color:#fbbf24;"></i> Sanctum</span>
+          <span class="tech-pill"><i class="fas fa-key" style="color:#00f5c4;"></i> Passport</span>
+          <span class="tech-pill"><i class="fas fa-code" style="color:#00f5c4;"></i> Inertia.js</span>
+          <span class="tech-pill"><i class="fas fa-shield-alt" style="color:#f43f5e;"></i> Backpack</span>
+        </div>
       </div>
-      <div class="t-body" style="font-size:0.75rem">
-        <span class="to"><span class="tpunc">{</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"email"</span><span class="tpunc">:</span> <span class="ts">"Mukesh986677@gmail.com"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"phone"</span><span class="tpunc">:</span> <span class="ts">"+977 9866775130"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"whatsapp"</span><span class="tpunc">:</span> <span class="ts">"+977 9866775130"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"location"</span><span class="tpunc">:</span> <span class="ts">"New Baneshwor, Kathmandu"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"github"</span><span class="tpunc">:</span> <span class="ts">"github.com/muku9812"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"linkedin"</span><span class="tpunc">:</span> <span class="ts">"linkedin.com/in/mukesh-mandal"</span><span class="tpunc">,</span></span>
-        <span class="to">&nbsp;&nbsp;<span class="tk">"open_to_work"</span><span class="tpunc">:</span> <span class="tv">true</span></span>
-        <span class="to"><span class="tpunc">}</span></span>
-        <div class="t-gap"></div>
-        <div class="t-line"><span class="tp">$</span> <span class="tc">send --message "Hello Mukesh"</span></div>
-        <span class="to" style="color:var(--green)">✓ Message sent successfully</span>
-      </div>
-    </div>
-    <div class="reveal">
-      <div class="cl-list">
-        <a href="mailto:Mukesh986677@gmail.com" class="cli">
-          <span class="cli-ico">📧</span>
-          <div><span class="cli-lbl">email</span><span class="cli-val">Mukesh986677@gmail.com</span></div>
-        </a>
-        <a href="tel:+9779866775130" class="cli">
-          <span class="cli-ico">📱</span>
-          <div><span class="cli-lbl">phone</span><span class="cli-val">+977 9866775130</span></div>
-        </a>
-        <a href="https://wa.me/9779866775130" class="cli" target="_blank">
-          <span class="cli-ico">💬</span>
-          <div><span class="cli-lbl">whatsapp</span><span class="cli-val">+977 9866775130</span></div>
-        </a>
-        <a href="https://github.com/muku9812" class="cli" target="_blank">
-          <span class="cli-ico">🐙</span>
-          <div><span class="cli-lbl">github</span><span class="cli-val">github.com/muku9812</span></div>
-        </a>
-        <a href="https://www.linkedin.com/in/mukesh-mandal-20b7a539b" class="cli" target="_blank">
-          <span class="cli-ico">💼</span>
-          <div><span class="cli-lbl">linkedin</span><span class="cli-val">linkedin.com/in/mukesh-mandal</span></div>
-        </a>
-        <div class="cli" style="cursor:default">
-          <span class="cli-ico">📍</span>
-          <div><span class="cli-lbl">location</span><span class="cli-val">New Baneshwor, Kathmandu 🇳🇵</span></div>
+      <div>
+        <div class="skill-group reveal" style="transition-delay:.1s">
+          <h3><i class="fas fa-database"></i> Other Skills</h3>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-fire-alt" style="color:#fbbf24;"></i> Laravel Livewire</span><span class="skill-pct">55%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="55" style="background:linear-gradient(90deg,var(--accent2),var(--accent3));"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-leaf" style="color:#00f5c4;"></i> MongoDB (learning)</span><span class="skill-pct">40%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="40" style="background:linear-gradient(90deg,var(--accent2),var(--accent3));"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fab fa-docker" style="color:#7c3aed;"></i> Docker (learning)</span><span class="skill-pct">35%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="35" style="background:linear-gradient(90deg,var(--accent2),var(--accent3));"></div></div>
+          </div>
+          <div class="skill-item">
+            <div class="skill-header"><span class="skill-name"><i class="fas fa-file-excel" style="color:#00f5c4;"></i> Microsoft Office</span><span class="skill-pct">60%</span></div>
+            <div class="skill-track"><div class="skill-fill" data-w="60" style="background:linear-gradient(90deg,var(--accent2),var(--accent3));"></div></div>
+          </div>
+        </div>
+        <div class="reveal" style="margin-top:1.8rem;transition-delay:.15s;">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:1rem;margin-bottom:1.1rem;color:var(--txt2);display:flex;align-items:center;gap:.65rem;">
+            <i class="fas fa-users" style="color:var(--accent2);font-size:.85rem;"></i> Soft Skills
+          </div>
+          <div class="soft-grid">
+            <div class="soft-card"><i class="fas fa-comments"></i><p>Communication</p></div>
+            <div class="soft-card"><i class="fas fa-puzzle-piece"></i><p>Problem Solving</p></div>
+            <div class="soft-card"><i class="fas fa-bolt"></i><p>Adaptability</p></div>
+            <div class="soft-card"><i class="fas fa-handshake"></i><p>Teamwork</p></div>
+            <div class="soft-card"><i class="fas fa-clock"></i><p>Time Management</p></div>
+            <div class="soft-card"><i class="fas fa-eye"></i><p>Attention to Detail</p></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer>
-  <div style="display:flex;align-items:center;gap:1.2rem">
-    <div class="f-status"><div class="f-dot"></div>mukesh@portfolio:~$</div>
-    <span>© 2025 Mukesh Mandal</span>
+<!-- ══ CONTACT ══ -->
+<section id="contact">
+  <div class="sec-wrap">
+    <div class="sec-header reveal">
+      <div class="sec-tag">// let's connect</div>
+      <h2 class="sec-title">Get In <span>Touch</span></h2>
+      <div class="sec-line"></div>
+    </div>
+    <div class="contact-grid">
+      <div class="reveal-left">
+        <div class="contact-text">
+          <h3>Let's build something great together.</h3>
+          <p>I'm always open to discussing new projects, creative ideas, or opportunities. Whether it's a startup MVP, a government portal, or a full enterprise system — I'm ready to help.</p>
+        </div>
+        <div class="contact-items">
+          <div class="contact-row">
+            <div class="contact-icon"><i class="fas fa-phone"></i></div>
+            <div class="contact-info"><div class="clabel">Phone / WhatsApp</div><div class="cvalue">+977 9866775130</div></div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon" style="background:rgba(124,58,237,0.08);color:var(--accent2);"><i class="fas fa-envelope"></i></div>
+            <div class="contact-info"><div class="clabel">Email</div><div class="cvalue">Mukesh986677@gmail.com</div></div>
+          </div>
+          <div class="contact-row">
+            <div class="contact-icon" style="background:rgba(244,63,94,0.08);color:var(--accent3);"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="contact-info"><div class="clabel">Location</div><div class="cvalue">New Baneshwor, Kathmandu 🇳🇵</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="social-links">
+          <a href="https://github.com/muku9812" target="_blank" class="social-link">
+            <i class="fab fa-github"></i>
+            <div><div class="sname">GitHub</div><div class="shandle">@muku9812</div></div>
+            <i class="fas fa-arrow-right sarrow"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/mukesh-mandal-20b7a539b" target="_blank" class="social-link">
+            <i class="fab fa-linkedin-in" style="color:#0a66c2;"></i>
+            <div><div class="sname">LinkedIn</div><div class="shandle">Mukesh Mandal</div></div>
+            <i class="fas fa-arrow-right sarrow"></i>
+          </a>
+          <a href="https://www.facebook.com/mukesh.mandal.986677" target="_blank" class="social-link">
+            <i class="fab fa-facebook-f" style="color:#1877f2;"></i>
+            <div><div class="sname">Facebook</div><div class="shandle">Mukesh Mandal</div></div>
+            <i class="fas fa-arrow-right sarrow"></i>
+          </a>
+          <a href="mailto:Mukesh986677@gmail.com" class="social-link">
+            <i class="fas fa-envelope" style="color:var(--accent3);"></i>
+            <div><div class="sname">Email</div><div class="shandle">Mukesh986677@gmail.com</div></div>
+            <i class="fas fa-arrow-right sarrow"></i>
+          </a>
+          <a href="https://wa.me/9779866775130" target="_blank" class="social-link">
+            <i class="fab fa-whatsapp" style="color:#25d366;"></i>
+            <div><div class="sname">WhatsApp</div><div class="shandle">+977 9866775130</div></div>
+            <i class="fas fa-arrow-right sarrow"></i>
+          </a>
+        </div>
+      </div>
+    </div>
   </div>
-  <a href="#hero">↑ scroll to top</a>
+</section>
+
+<footer>
+  <div class="footer-logo">Mukesh Mandal</div>
+  <p>Full Stack Developer — Built with passion in Kathmandu 🇳🇵</p>
+  <a href="#hero" class="back-top"><i class="fas fa-arrow-up"></i></a>
 </footer>
 
 <script>
-  // Custom laptop cursor
-  const cur = document.getElementById('cursor');
-  const dot = document.getElementById('cursor-dot');
-  const trail = document.getElementById('cursor-trail');
-  let mx = 0, my = 0;
+/* ── CURSOR ── */
+const dot=document.getElementById('cur-dot'),ring=document.getElementById('cur-ring');
+let mx=window.innerWidth/2,my=window.innerHeight/2;
+window.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+let rx=mx,ry=my;
+(function ar(){rx+=(mx-rx)*.1;ry+=(my-ry)*.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar);})();
+document.querySelectorAll('a,button,.proj-card,.edu-card,.tl-content,.contact-row,.social-link,.tech-pill,.chip,.soft-card').forEach(el=>{
+  el.addEventListener('mouseenter',()=>ring.classList.add('big'));
+  el.addEventListener('mouseleave',()=>ring.classList.remove('big'));
+});
+document.addEventListener('mousedown',()=>ring.classList.add('clicking'));
+document.addEventListener('mouseup',()=>ring.classList.remove('clicking'));
 
-  document.addEventListener('mousemove', e => {
-    mx = e.clientX; my = e.clientY;
-    cur.style.left = (mx - 4) + 'px';
-    cur.style.top  = (my - 4) + 'px';
-    dot.style.left = mx + 'px';
-    dot.style.top  = my + 'px';
-    trail.style.left = mx + 'px';
-    trail.style.top  = my + 'px';
+/* ── SCROLL ── */
+const prog=document.getElementById('sprogress');
+window.addEventListener('scroll',()=>{
+  const p=(window.scrollY/(document.documentElement.scrollHeight-window.innerHeight))*100;
+  prog.style.width=p+'%';
+  document.getElementById('navbar').classList.toggle('scrolled',window.scrollY>60);
+});
+
+/* ── TYPING ── */
+const words=['Full Stack Developer','Laravel Expert','Vue.js Developer','Nuxt.js Engineer','GRC Systems Builder','Gov Portal Specialist'];
+let wi=0,ci=0,del=false;
+const typed=document.getElementById('typed');
+function tl(){
+  const w=words[wi];
+  if(del){typed.textContent=w.slice(0,--ci);}else{typed.textContent=w.slice(0,++ci);}
+  let sp=del?36:82;
+  if(!del&&ci===w.length){sp=2400;del=true;}
+  else if(del&&ci===0){del=false;wi=(wi+1)%words.length;sp=380;}
+  setTimeout(tl,sp);
+}
+tl();
+
+/* ── REVEAL ── */
+const ro=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('in');}),{threshold:.08});
+document.querySelectorAll('.reveal,.reveal-left,.reveal-right').forEach(el=>ro.observe(el));
+
+/* ── SKILL BARS ── */
+const so=new IntersectionObserver(e=>e.forEach(x=>{
+  if(x.isIntersecting){const w=x.target.dataset.w;setTimeout(()=>{x.target.style.width=w+'%';},250);}
+}),{threshold:.5});
+document.querySelectorAll('.skill-fill').forEach(el=>so.observe(el));
+
+/* ── SMOOTH SCROLL ── */
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t){e.preventDefault();t.scrollIntoView({behavior:'smooth',block:'start'});}
+  });
+});
+
+/* ══ THREE.JS HERO — ENHANCED 3D ══ */
+(function(){
+  const wrap=document.getElementById('hero3dWrap');
+  if(!wrap||typeof THREE==='undefined')return;
+  const W=wrap.offsetWidth||700,H=window.innerHeight;
+  const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+  renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  renderer.setSize(W,H);
+  renderer.setClearColor(0,0);
+  wrap.appendChild(renderer.domElement);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(52,W/H,.1,100);
+  cam.position.set(0,0,6);
+
+  // Main torus knot wireframe
+  const kg=new THREE.TorusKnotGeometry(1.4,.4,260,28,2,3);
+  const km=new THREE.MeshPhongMaterial({color:0x00f5c4,wireframe:true,transparent:true,opacity:.28});
+  const knot=new THREE.Mesh(kg,km);scene.add(knot);
+
+  // Inner solid torus knot
+  const km2=new THREE.MeshPhongMaterial({color:0x7c3aed,emissive:0x2a1050,transparent:true,opacity:.12});
+  const knot2=new THREE.Mesh(kg,km2);knot2.scale.setScalar(.96);scene.add(knot2);
+
+  // Second torus knot for depth
+  const kg3=new THREE.TorusKnotGeometry(2,.06,200,12,3,5);
+  const km3=new THREE.MeshBasicMaterial({color:0xf43f5e,transparent:true,opacity:.18,wireframe:true});
+  const knot3=new THREE.Mesh(kg3,km3);scene.add(knot3);
+
+  // Orbit rings
+  const ringData=[
+    {r:2.3,t:.012,c:0x00f5c4,op:.5,rx:Math.PI*.5,ry:0},
+    {r:1.9,t:.008,c:0x7c3aed,op:.35,rx:Math.PI*.3,ry:Math.PI*.18},
+    {r:2.8,t:.006,c:0xf43f5e,op:.25,rx:-Math.PI*.4,ry:Math.PI*.1},
+    {r:3.3,t:.004,c:0xfbbf24,op:.18,rx:Math.PI*.15,ry:Math.PI*.35},
+  ];
+  const rings=ringData.map(d=>{
+    const g=new THREE.TorusGeometry(d.r,d.t,8,160);
+    const m=new THREE.MeshBasicMaterial({color:d.c,transparent:true,opacity:d.op});
+    const mesh=new THREE.Mesh(g,m);mesh.rotation.x=d.rx;mesh.rotation.y=d.ry;
+    scene.add(mesh);return mesh;
   });
 
-  // Scale cursor on hover over links/buttons
-  document.querySelectorAll('a, button').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cur.style.transform = 'translate(-4px,-4px) scale(1.3)';
-      cur.style.filter = 'drop-shadow(0 0 10px rgba(57,211,83,0.9))';
-      dot.style.transform = 'translate(-50%,-50%) scale(2)';
-      dot.style.background = '#fff';
-      trail.style.width = '40px';
-      trail.style.height = '40px';
-    });
-    el.addEventListener('mouseleave', () => {
-      cur.style.transform = 'translate(-4px,-4px) scale(1)';
-      cur.style.filter = 'drop-shadow(0 0 6px rgba(57,211,83,0.7))';
-      dot.style.transform = 'translate(-50%,-50%) scale(1)';
-      dot.style.background = 'var(--green)';
-      trail.style.width = '28px';
-      trail.style.height = '28px';
-    });
+  // Orbiting tech nodes with trails
+  const oGroup=new THREE.Group();scene.add(oGroup);
+  const nColors=[0x00f5c4,0x7c3aed,0xf43f5e,0xfbbf24,0x00f5c4,0xf43f5e,0x7c3aed,0xfbbf24];
+  nColors.forEach((c,i)=>{
+    const sg=new THREE.SphereGeometry(.09,16,16);
+    const sm=new THREE.MeshPhongMaterial({color:c,emissive:c,emissiveIntensity:.8});
+    const s=new THREE.Mesh(sg,sm);
+    const a=(i/nColors.length)*Math.PI*2;
+    const rad=2.4+Math.sin(i)*.4;
+    s.position.set(Math.cos(a)*rad,Math.sin(a*.7)*.9,Math.sin(a*1.3)*.6);
+    // glow sphere
+    const gg=new THREE.SphereGeometry(.22,12,12);
+    const gm=new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:.06});
+    s.add(new THREE.Mesh(gg,gm));
+    oGroup.add(s);
   });
 
-  // Contribution graph
-  const grid = document.getElementById('contrib-grid');
-  const pattern = [0,0,1,1,2,2,3,3,4,3,2,1,2,3,4,3,2,1,0,2,3,4,3,2,1,4];
-  const cls = ['','cc1','cc2','cc3','cc4'];
-  for (let r = 0; r < 7; r++) {
-    for (let c = 0; c < 26; c++) {
-      const el = document.createElement('div');
-      el.className = 'cc';
-      const base = pattern[c];
-      const lvl = Math.min(4, Math.max(0, base + Math.floor(Math.random() * 2) - (r % 3 === 0 ? 1 : 0)));
-      if (lvl > 0) el.classList.add(cls[lvl]);
-      grid.appendChild(el);
-    }
+  // Icosahedron wireframe shell
+  const ig=new THREE.IcosahedronGeometry(2.0,1);
+  const im=new THREE.MeshBasicMaterial({color:0x7c3aed,wireframe:true,transparent:true,opacity:.06});
+  const ico=new THREE.Mesh(ig,im);scene.add(ico);
+
+  // Octahedron wireframe
+  const og=new THREE.OctahedronGeometry(2.8,2);
+  const om=new THREE.MeshBasicMaterial({color:0x00f5c4,wireframe:true,transparent:true,opacity:.04});
+  const octa=new THREE.Mesh(og,om);scene.add(octa);
+
+  // Dense particle field
+  const N=600;
+  const ppos=new Float32Array(N*3);
+  const pcols=new Float32Array(N*3);
+  const palette=[[0,245,196],[124,58,237],[244,63,94],[251,191,36]];
+  for(let i=0;i<N;i++){
+    ppos[i*3]=(Math.random()-.5)*14;ppos[i*3+1]=(Math.random()-.5)*14;ppos[i*3+2]=(Math.random()-.5)*7;
+    const pc=palette[Math.floor(Math.random()*4)];
+    pcols[i*3]=pc[0]/255;pcols[i*3+1]=pc[1]/255;pcols[i*3+2]=pc[2]/255;
   }
+  const pg=new THREE.BufferGeometry();
+  pg.setAttribute('position',new THREE.BufferAttribute(ppos,3));
+  pg.setAttribute('color',new THREE.BufferAttribute(pcols,3));
+  const pm=new THREE.PointsMaterial({size:.032,transparent:true,opacity:.5,vertexColors:true});
+  const pts=new THREE.Points(pg,pm);scene.add(pts);
 
-  // Scroll reveal with IntersectionObserver
-  const obs = new IntersectionObserver(entries => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('visible');
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal, .ei, .pc').forEach(el => obs.observe(el));
+  // Lights
+  scene.add(new THREE.AmbientLight(0xffffff,.15));
+  const pl1=new THREE.PointLight(0x00f5c4,3,15);pl1.position.set(4,4,4);scene.add(pl1);
+  const pl2=new THREE.PointLight(0x7c3aed,3,15);pl2.position.set(-4,-4,3);scene.add(pl2);
+  const pl3=new THREE.PointLight(0xf43f5e,2,10);pl3.position.set(0,6,-4);scene.add(pl3);
+  const pl4=new THREE.PointLight(0xfbbf24,1.5,12);pl4.position.set(-5,0,2);scene.add(pl4);
 
-  // Stagger animations
-  document.querySelectorAll('.ei').forEach((el, i) => { el.style.transitionDelay = (i * 0.09) + 's'; });
-  document.querySelectorAll('.pc').forEach((el, i) => { el.style.transitionDelay = (i * 0.05) + 's'; });
+  let tmx=0,tmy=0;
+  window.addEventListener('mousemove',e=>{tmx=(e.clientX/window.innerWidth-.5)*2;tmy=(e.clientY/window.innerHeight-.5)*2;});
 
-  // Active nav tab on scroll
-  const secs = document.querySelectorAll('section[id]');
-  const tabs = document.querySelectorAll('.nav-tab');
-  window.addEventListener('scroll', () => {
-    let active = '';
-    secs.forEach(s => { if (window.scrollY >= s.offsetTop - 120) active = s.id; });
-    tabs.forEach(t => {
-      t.classList.toggle('active', t.getAttribute('href') === '#' + active);
-    });
+  let t=0;
+  (function frame(){
+    requestAnimationFrame(frame);t+=.006;
+    knot.rotation.x+=.0035;knot.rotation.y+=.005;
+    knot2.rotation.x-=.0025;knot2.rotation.y-=.0035;
+    knot3.rotation.x+=.002;knot3.rotation.y-=.003;knot3.rotation.z+=.001;
+    oGroup.rotation.y+=.008;oGroup.rotation.x=Math.sin(t*.35)*.2;
+    rings[0].rotation.z+=.005;rings[1].rotation.z-=.004;rings[2].rotation.y+=.003;rings[3].rotation.x+=.002;
+    ico.rotation.x+=.0025;ico.rotation.y+=.0035;
+    octa.rotation.y-=.002;octa.rotation.z+=.0015;
+    pts.rotation.y+=.0006;pts.rotation.x+=.0003;
+    pl1.position.x=Math.cos(t)*4;pl1.position.z=Math.sin(t)*3.5;
+    pl2.position.x=Math.cos(t+Math.PI)*3.5;pl2.position.z=Math.sin(t+Math.PI)*3;
+    pl3.position.x=Math.sin(t*.7)*3;pl3.position.y=Math.cos(t*.5)*4;
+    cam.position.x+=(tmx*.65-cam.position.x)*.038;
+    cam.position.y+=(-tmy*.38-cam.position.y)*.038;
+    cam.lookAt(0,0,0);
+    renderer.render(scene,cam);
+  })();
+
+  window.addEventListener('resize',()=>{
+    const nw=wrap.offsetWidth,nh=window.innerHeight;
+    cam.aspect=nw/nh;cam.updateProjectionMatrix();renderer.setSize(nw,nh);
   });
+})();
+
+/* ══ BG SCENE ══ */
+(function(){
+  const canvas=document.getElementById('bg-canvas');
+  if(typeof THREE==='undefined')return;
+  const renderer=new THREE.WebGLRenderer({canvas,antialias:false,alpha:true});
+  renderer.setPixelRatio(1);renderer.setSize(window.innerWidth,window.innerHeight);renderer.setClearColor(0,0);
+  const scene=new THREE.Scene();
+  const cam=new THREE.PerspectiveCamera(60,window.innerWidth/window.innerHeight,.1,1000);
+  cam.position.z=30;
+
+  // Stars
+  const N=2800,pos=new Float32Array(N*3),cols=new Float32Array(N*3);
+  const pal=[[0,245,196],[124,58,237],[244,63,94],[251,191,36],[255,255,255]];
+  for(let i=0;i<N;i++){
+    pos[i*3]=(Math.random()-.5)*100;pos[i*3+1]=(Math.random()-.5)*100;pos[i*3+2]=(Math.random()-.5)*50;
+    const c=pal[Math.floor(Math.random()*pal.length)];
+    cols[i*3]=c[0]/255;cols[i*3+1]=c[1]/255;cols[i*3+2]=c[2]/255;
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.BufferAttribute(pos,3));
+  g.setAttribute('color',new THREE.BufferAttribute(cols,3));
+  scene.add(new THREE.Points(g,new THREE.PointsMaterial({size:.06,transparent:true,opacity:.22,vertexColors:true})));
+
+  const makeTorus=(r,c,op,rx,rz)=>{
+    const m=new THREE.Mesh(new THREE.TorusGeometry(r,.03,6,200),new THREE.MeshBasicMaterial({color:c,transparent:true,opacity:op}));
+    m.rotation.x=rx;m.rotation.z=rz;scene.add(m);return m;
+  };
+  const t1=makeTorus(22,0x00f5c4,.04,Math.PI*.3,0);
+  const t2=makeTorus(16,0x7c3aed,.035,-Math.PI*.2,Math.PI*.1);
+  const t3=makeTorus(28,0xf43f5e,.025,Math.PI*.15,Math.PI*.25);
+
+  (function fr(){requestAnimationFrame(fr);t1.rotation.z+=.0007;t2.rotation.z-=.0005;t3.rotation.y+=.0004;renderer.render(scene,cam);})();
+  window.addEventListener('resize',()=>{renderer.setSize(window.innerWidth,window.innerHeight);cam.aspect=window.innerWidth/window.innerHeight;cam.updateProjectionMatrix();});
+})();
+
+/* ══ MINI PROJECT CANVASES ══ */
+document.querySelectorAll('.proj-mini-canvas').forEach(cv=>{
+  const c1=cv.dataset.c1||'#00f5c4',c2=cv.dataset.c2||'#7c3aed';
+  function resize(){cv.width=cv.parentElement.offsetWidth;cv.height=cv.parentElement.offsetHeight;}
+  resize();
+  const ctx=cv.getContext('2d');
+  const pts=Array.from({length:24},()=>({
+    x:Math.random()*cv.width,y:Math.random()*cv.height,
+    vx:(Math.random()-.5)*.5,vy:(Math.random()-.5)*.5,r:Math.random()*2.2+.8
+  }));
+  function draw(){
+    ctx.clearRect(0,0,cv.width,cv.height);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0||p.x>cv.width)p.vx*=-1;if(p.y<0||p.y>cv.height)p.vy*=-1;});
+    for(let i=0;i<pts.length;i++)for(let j=i+1;j<pts.length;j++){
+      const dx=pts[i].x-pts[j].x,dy=pts[i].y-pts[j].y,d=Math.hypot(dx,dy);
+      if(d<100){
+        const op=Math.round((1-d/100)*30).toString(16).padStart(2,'0');
+        ctx.beginPath();ctx.moveTo(pts[i].x,pts[i].y);ctx.lineTo(pts[j].x,pts[j].y);
+        ctx.strokeStyle=c1+op;ctx.lineWidth=.5;ctx.stroke();
+      }
+    }
+    pts.forEach(p=>{ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=c1+'99';ctx.fill();});
+    requestAnimationFrame(draw);
+  }
+  draw();
+  window.addEventListener('resize',()=>{resize();});
+});
 </script>
 </body>
 </html>
