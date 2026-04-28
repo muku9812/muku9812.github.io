@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mukesh Mandal — Full Stack Developer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0d1117;
+      --bg2: #161b22;
+      --bg3: #1c2128;
+      --border: #30363d;
+      --border2: #21262d;
+      --green: #39d353;
+      --blue: #58a6ff;
+      --purple: #bc8cff;
+      --orange: #f0883e;
+      --red: #ff7b72;
+      --yellow: #e3b341;
+      --text: #c9d1d9;
+      --text-dim: #8b949e;
+      --text-bright: #f0f6fc;
+      --mono: 'JetBrains Mono', monospace;
+      --sans: 'Space Grotesk', sans-serif;
+    }
+    html { scroll-behavior: smooth; }
+    body { background: var(--bg); color: var(--text); font-family: var(--mono); overflow-x: hidden; cursor: none; }
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 9990; pointer-events: none;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.025) 2px, rgba(0,0,0,0.025) 4px);
+    }
+
+    /* CURSOR */
+    body { cursor: none; }
+    #cursor { position: fixed; pointer-events: none; z-index: 9999; transform: translate(-4px, -4px); filter: drop-shadow(0 0 6px rgba(57,211,83,0.7)); }
+    #cursor svg { width: 32px; height: 32px; display: block; }
+    #cursor-dot { position: fixed; pointer-events: none; z-index: 9998; width: 5px; height: 5px; border-radius: 50%; background: var(--green); transform: translate(-50%, -50%); box-shadow: 0 0 8px var(--green); }
+    #cursor-trail { position: fixed; pointer-events: none; z-index: 9997; width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(57,211,83,0.25); transform: translate(-50%, -50%); transition: left 0.18s ease, top 0.18s ease; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+    /* NAV */
+    nav { position: fixed; top:0; left:0; right:0; z-index:100; height:48px; display:flex; align-items:center; justify-content:space-between; padding:0 2rem; background:var(--bg2); border-bottom:1px solid var(--border); font-size:0.72rem; }
+    .nav-tabs { display:flex; height:100%; }
+    .nav-tab { display:flex; align-items:center; gap:0.45rem; padding:0 1.1rem; color:var(--text-dim); text-decoration:none; border-right:1px solid var(--border); font-size:0.7rem; transition:color 0.15s,background 0.15s; position:relative; }
+    .nav-tab:first-child { border-left:1px solid var(--border); }
+    .nav-tab.active,.nav-tab:hover { color:var(--text-bright); background:var(--bg3); }
+    .nav-tab.active::after { content:''; position:absolute; bottom:0; left:0; right:0; height:2px; background:var(--green); }
+    .n-dot { width:7px; height:7px; border-radius:50%; }
+    .nd-g { background:#3fb950; } .nd-b { background:var(--blue); } .nd-p { background:var(--purple); } .nd-o { background:var(--orange); }
+    .nav-right { font-size:0.65rem; color:var(--text-dim); display:flex; align-items:center; gap:1.2rem; }
+    .nav-branch { color:var(--purple); display:flex; align-items:center; gap:0.35rem; }
+
+    /* HERO */
+    #hero { min-height:100vh; display:grid; grid-template-columns:1fr 1fr; align-items:center; padding:6rem 4rem 3rem; gap:3rem; position:relative; overflow:hidden; }
+    .hero-glow { position:absolute; inset:0; z-index:0; background:radial-gradient(ellipse 65% 65% at 70% 50%, rgba(57,211,83,0.04) 0%, transparent 70%); }
+
+    /* Terminal window */
+    .t-win { background:var(--bg2); border:1px solid var(--border); border-radius:8px; overflow:hidden; position:relative; z-index:1; animation:fadeUp 0.5s ease both; }
+    .t-bar { background:var(--bg3); border-bottom:1px solid var(--border); padding:0.55rem 1rem; display:flex; align-items:center; gap:0.45rem; }
+    .tb { width:12px; height:12px; border-radius:50%; } .tb-r{background:#ff5f57;} .tb-y{background:#ffbd2e;} .tb-g{background:#28c840;}
+    .t-bar-title { margin-left:0.6rem; font-size:0.65rem; color:var(--text-dim); }
+    .t-body { padding:1.4rem 1.8rem 1.8rem; font-size:0.78rem; line-height:2; }
+    .t-line { display:flex; align-items:flex-start; gap:0.5rem; }
+    .tp { color:var(--green); user-select:none; flex-shrink:0; } .tc { color:var(--text-bright); }
+    .to { color:var(--text-dim); padding-left:1.1rem; display:block; }
+    .tk { color:var(--blue); } .tv { color:var(--green); } .ts { color:var(--orange); }
+    .tpunc { color:var(--text-dim); }
+    .t-csr { display:inline-block; width:8px; height:1em; background:var(--green); vertical-align:text-bottom; animation:blink 1s step-end infinite; margin-left:2px; }
+    .t-gap { height:0.6rem; }
+
+    /* Hero right */
+    .hero-right { position:relative; z-index:1; display:flex; flex-direction:column; gap:1rem; animation:fadeIn 0.6s 0.2s ease both; }
+    .hero-ctas { display:flex; gap:0.8rem; flex-wrap:wrap; }
+    .btn-p { display:inline-flex; align-items:center; gap:0.4rem; background:var(--green); color:var(--bg); font-family:var(--mono); font-weight:700; font-size:0.72rem; padding:0.65rem 1.3rem; text-decoration:none; border-radius:4px; transition:opacity 0.2s,transform 0.15s; }
+    .btn-p:hover { opacity:0.85; transform:translateY(-1px); }
+    .btn-o { display:inline-flex; align-items:center; gap:0.4rem; border:1px solid var(--border); color:var(--text); font-family:var(--mono); font-size:0.72rem; padding:0.65rem 1.3rem; text-decoration:none; border-radius:4px; transition:border-color 0.2s,color 0.2s; }
+    .btn-o:hover { border-color:var(--green); color:var(--green); }
+
+    .stat-cards { display:grid; grid-template-columns:1fr 1fr; gap:0.7rem; }
+    .sc { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:0.9rem 1.1rem; }
+    .sc-num { font-size:1.7rem; font-weight:700; color:var(--green); line-height:1; }
+    .sc-label { font-size:0.6rem; color:var(--text-dim); margin-top:0.25rem; }
+
+    .contrib-box { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:1rem 1.2rem; }
+    .cb-title { font-size:0.62rem; color:var(--text-dim); margin-bottom:0.7rem; }
+    .cb-grid { display:grid; grid-template-columns:repeat(26,1fr); grid-template-rows:repeat(7,1fr); gap:2px; }
+    .cc { width:100%; aspect-ratio:1; border-radius:2px; background:var(--bg3); }
+    .cc1{background:#0e4429;} .cc2{background:#006d32;} .cc3{background:#26a641;} .cc4{background:#39d353;}
+
+    .tech-box { background:var(--bg2); border:1px solid var(--border); border-radius:6px; padding:0.9rem 1.2rem; }
+    .tech-title { font-size:0.62rem; color:var(--text-dim); margin-bottom:0.7rem; }
+    .tech-bars { display:flex; flex-direction:column; gap:0.45rem; }
+    .tbr { display:flex; align-items:center; gap:0.7rem; }
+    .tbn { font-size:0.6rem; color:var(--text-dim); width:72px; flex-shrink:0; }
+    .tbt { flex:1; height:5px; background:var(--bg3); border-radius:3px; overflow:hidden; }
+    .tbf { height:100%; border-radius:3px; }
+    .tbp { font-size:0.58rem; color:var(--text-dim); width:28px; text-align:right; }
+
+    /* SECTIONS */
+    section { padding:5rem 4rem; }
+    .sh { margin-bottom:2.5rem; }
+    .sbc { font-size:0.63rem; color:var(--text-dim); margin-bottom:0.6rem; display:flex; align-items:center; gap:0.4rem; }
+    .sbc-a { color:var(--text); }
+    .st { font-family:var(--sans); font-size:clamp(1.5rem,2.5vw,2.2rem); font-weight:700; color:var(--text-bright); line-height:1.2; }
+    .hl-g { color:var(--green); } .hl-b { color:var(--blue); } .hl-p { color:var(--purple); }
+
+    /* ABOUT */
+    #about { background:var(--bg); border-top:1px solid var(--border2); }
+    .about-grid { display:grid; grid-template-columns:1fr 1fr; gap:2rem; }
+    .cb { background:var(--bg2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+    .cbh { background:var(--bg3); border-bottom:1px solid var(--border); padding:0.5rem 1rem; display:flex; align-items:center; gap:0.4rem; font-size:0.65rem; color:var(--text-dim); }
+    .cbb { padding:1.1rem 1.3rem; font-size:0.75rem; line-height:1.95; }
+    .ln { color:#3d444d; user-select:none; margin-right:0.8rem; display:inline-block; width:1.4rem; text-align:right; }
+    .kw{color:var(--red);} .fn{color:var(--purple);} .prop{color:var(--blue);} .str2{color:var(--orange);} .num{color:var(--green);} .cm{color:#8b949e;font-style:italic;} .punc{color:var(--text-dim);}
+
+    .skill-rows { display:flex; flex-direction:column; }
+    .sr { display:flex; align-items:center; gap:0.7rem; padding:0.45rem 0.8rem; border-radius:3px; transition:background 0.15s; }
+    .sr:hover { background:var(--bg3); }
+    .sr-icon { font-size:0.7rem; flex-shrink:0; }
+    .sr-name { font-size:0.72rem; color:var(--text); flex:1; }
+    .sr-lv { font-size:0.56rem; padding:0.15rem 0.45rem; border-radius:3px; }
+    .lv-e { background:rgba(57,211,83,0.12); color:var(--green); }
+    .lv-m { background:rgba(88,166,255,0.12); color:var(--blue); }
+    .lv-b { background:rgba(240,136,62,0.12); color:var(--orange); }
+
+    /* EXPERIENCE */
+    #experience { background:var(--bg2); border-top:1px solid var(--border2); border-bottom:1px solid var(--border2); }
+    .exp-list { display:flex; flex-direction:column; gap:1px; background:var(--border2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+    .ei { background:var(--bg2); padding:1.8rem 2.2rem; display:grid; grid-template-columns:190px 1fr; gap:2rem; opacity:0; transform:translateX(-14px); transition:opacity 0.5s,transform 0.5s,background 0.15s; }
+    .ei.visible { opacity:1; transform:translateX(0); }
+    .ei:hover { background:var(--bg3); }
+    .ei-current { border-left:2px solid var(--green); }
+    .ei-meta { border-right:1px solid var(--border2); padding-right:1.8rem; }
+    .ei-date { font-size:0.62rem; color:var(--text-dim); line-height:1.7; margin-bottom:0.4rem; }
+    .ei-company { font-size:0.78rem; font-weight:600; color:var(--green); margin-bottom:0.2rem; }
+    .ei-loc { font-size:0.6rem; color:var(--text-dim); }
+    .ei-role { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.5rem; }
+    .ei-desc { font-size:0.72rem; color:var(--text-dim); line-height:1.8; }
+    .ei-chips { display:flex; flex-wrap:wrap; gap:0.35rem; margin-top:0.7rem; }
+    .chip { font-size:0.58rem; padding:0.15rem 0.55rem; border:1px solid var(--border); border-radius:3px; color:var(--text-dim); }
+    .chip-cur { border-color:rgba(57,211,83,0.3); color:var(--green); }
+
+    /* PROJECTS */
+    #projects { background:var(--bg); }
+    .pg { display:grid; grid-template-columns:repeat(auto-fill,minmax(350px,1fr)); gap:1px; background:var(--border2); border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+    .pc { background:var(--bg2); padding:1.6rem 1.8rem; position:relative; overflow:hidden; opacity:0; transform:translateY(14px); transition:background 0.15s,opacity 0.5s,transform 0.5s; }
+    .pc.visible { opacity:1; transform:translateY(0); }
+    .pc:hover { background:var(--bg3); }
+    .pc::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:transparent; transition:background 0.2s; }
+    .pc:hover::before { background:var(--green); }
+    .pc-top { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:0.6rem; }
+    .pc-icon { font-size:1.1rem; }
+    .pc-num { font-size:0.58rem; color:var(--text-dim); font-family:var(--mono); }
+    .pc-name { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.4rem; }
+    .pc-co { display:inline-block; font-size:0.56rem; padding:0.12rem 0.45rem; border-radius:3px; margin-bottom:0.7rem; font-weight:500; }
+    .co-t { background:rgba(188,140,255,0.12); color:var(--purple); border:1px solid rgba(188,140,255,0.2); }
+    .co-y { background:rgba(57,211,83,0.1);  color:var(--green);  border:1px solid rgba(57,211,83,0.2); }
+    .co-f { background:rgba(88,166,255,0.1); color:var(--blue);   border:1px solid rgba(88,166,255,0.2); }
+    .pc-desc { font-size:0.7rem; color:var(--text-dim); line-height:1.8; margin-bottom:0.8rem; }
+    .pc-tags { display:flex; gap:0.3rem; flex-wrap:wrap; margin-bottom:0.8rem; }
+    .pt { font-size:0.56rem; padding:0.12rem 0.45rem; background:var(--bg3); border:1px solid var(--border); color:var(--text-dim); border-radius:3px; }
+    .pl { font-size:0.68rem; color:var(--blue); text-decoration:none; display:inline-flex; align-items:center; gap:0.3rem; transition:color 0.15s; }
+    .pl:hover { color:var(--green); }
+    .pl-na { font-size:0.68rem; color:var(--text-dim); }
+
+    /* EDUCATION */
+    #education { background:var(--bg2); border-top:1px solid var(--border2); }
+    .edu-grid { display:grid; grid-template-columns:1fr 1fr; gap:0.8rem; }
+    .edu-card { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1.6rem 1.8rem; transition:border-color 0.2s; }
+    .edu-card:hover { border-color:var(--green); }
+    .edu-yr { font-size:0.62rem; color:var(--green); margin-bottom:0.6rem; }
+    .edu-deg { font-family:var(--sans); font-size:0.95rem; font-weight:600; color:var(--text-bright); margin-bottom:0.25rem; }
+    .edu-sch { font-size:0.68rem; color:var(--blue); margin-bottom:0.5rem; }
+    .edu-note { font-size:0.68rem; color:var(--text-dim); line-height:1.7; }
+
+    .lang-sec { margin-top:2.5rem; }
+    .lang-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:0.8rem; }
+    .lc { background:var(--bg); border:1px solid var(--border); border-radius:6px; padding:1rem; text-align:center; transition:border-color 0.2s; }
+    .lc:hover { border-color:var(--green); }
+    .lc-name { font-size:0.75rem; color:var(--text-bright); margin-bottom:0.5rem; font-weight:500; }
+    .lbt { height:3px; background:var(--bg3); border-radius:2px; overflow:hidden; }
+    .lbf { height:100%; border-radius:2px; }
+    .lc-lvl { font-size:0.58rem; color:var(--text-dim); margin-top:0.35rem; }
+
+    /* CONTACT */
+    #contact { background:var(--bg); border-top:1px solid var(--border2); }
+    .contact-grid { display:grid; grid-template-columns:1fr 1fr; gap:2.5rem; }
+    .cl-list { display:flex; flex-direction:column; border:1px solid var(--border); border-radius:6px; overflow:hidden; }
+    .cli { display:flex; align-items:center; gap:0.9rem; padding:0.85rem 1.1rem; text-decoration:none; color:var(--text-dim); font-size:0.7rem; background:var(--bg2); border-bottom:1px solid var(--border2); transition:background 0.15s,color 0.15s; }
+    .cli:last-child { border-bottom:none; }
+    .cli:hover { background:var(--bg3); color:var(--green); }
+    .cli-ico { font-size:0.85rem; width:18px; }
+    .cli-lbl { font-size:0.58rem; color:var(--text-dim); display:block; margin-bottom:0.08rem; }
+    .cli-val { color:var(--text); font-size:0.7rem; }
+    .cli:hover .cli-val { color:var(--green); }
+
+    /* FOOTER */
+    footer { padding:0.9rem 2rem; background:var(--bg2); border-top:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; font-size:0.62rem; color:var(--text-dim); }
+    .f-status { display:flex; align-items:center; gap:0.4rem; }
+    .f-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:pulse 2s ease infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+    footer a { color:var(--blue); text-decoration:none; }
+    footer a:hover { color:var(--green); }
+
+    @keyframes fadeUp { from{opacity:0;transform:translateY(18px)} to{opacity:1;transform:translateY(0)} }
+    @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity 0.5s,transform 0.5s; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+
+    ::-webkit-scrollbar { width:5px; }
+    ::-webkit-scrollbar-track { background:var(--bg); }
+    ::-webkit-scrollbar-thumb { background:var(--border); }
+    ::-webkit-scrollbar-thumb:hover { background:var(--green); }
+
+    @media(max-width:900px){
+      nav { padding:0 1rem; }
+      .nav-tabs { display:none; }
+      #hero { grid-template-columns:1fr; padding:5rem 1.5rem 3rem; }
+      section { padding:4rem 1.5rem; }
+      .about-grid,.contact-grid,.edu-grid { grid-template-columns:1fr; }
+      .ei { grid-template-columns:1fr; }
+      .ei-meta { border-right:none; border-bottom:1px solid var(--border2); padding-right:0; padding-bottom:1rem; }
+      .lang-grid { grid-template-columns:1fr 1fr; }
+      footer { flex-direction:column; gap:0.4rem; }
+    }
+  </style>
+</head>
+<body>
+<div id="cursor-trail"></div><div id="cursor-dot"></div><div id="cursor"><svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="4" y="4" width="22" height="15" rx="2" fill="#161b22" stroke="#39d353" stroke-width="1.5"/><rect x="6" y="6" width="18" height="11" rx="1" fill="#1c2128"/><line x1="8" y1="9" x2="14" y2="9" stroke="#58a6ff" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="11.5" x2="18" y2="11.5" stroke="#f0883e" stroke-width="1.2" stroke-linecap="round"/><line x1="8" y1="14" x2="12" y2="14" stroke="#39d353" stroke-width="1.2" stroke-linecap="round"/><rect x="13" y="13" width="1.2" height="2" fill="#39d353"><animate attributeName="opacity" values="1;0;1" dur="1s" repeatCount="indefinite"/></rect><rect x="2" y="19" width="26" height="3" rx="1" fill="#161b22" stroke="#39d353" stroke-width="1.2"/><rect x="11" y="20" width="8" height="1.5" rx="0.5" fill="#30363d"/><line x1="4" y1="19" x2="26" y2="19" stroke="#39d353" stroke-width="0.5" opacity="0.4"/></svg></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-tabs">
+    <a href="#hero"       class="nav-tab active"><span class="n-dot nd-g"></span>portfolio.js</a>
+    <a href="#experience" class="nav-tab"><span class="n-dot nd-b"></span>experience.ts</a>
+    <a href="#projects"   class="nav-tab"><span class="n-dot nd-p"></span>projects.php</a>
+    <a href="#education"  class="nav-tab"><span class="n-dot nd-o"></span>education.md</a>
+    <a href="#contact"    class="nav-tab">contact.json</a>
+  </div>
+  <div class="nav-right">
+    <span class="nav-branch">⎇ main</span>
+    <span>mukesh@portfolio:~$</span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-glow"></div>
+
+  <div class="t-win">
+    <div class="t-bar">
+      <div class="tb tb-r"></div><div class="tb tb-y"></div><div class="tb tb-g"></div>
+      <span class="t-bar-title">~/mukesh-mandal — zsh</span>
+    </div>
+    <div class="t-body">
+      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="tc">cat developer.json</span></div>
+      <div class="t-gap"></div>
+      <span class="to"><span class="tpunc">{</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"name"</span><span class="tpunc">:</span> <span class="ts">"Mukesh Mandal"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"role"</span><span class="tpunc">:</span> <span class="ts">"Full Stack Developer"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"company"</span><span class="tpunc">:</span> <span class="ts">"Trilokiya Tech"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"current_project"</span><span class="tpunc">:</span> <span class="ts">"GRC System"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"location"</span><span class="tpunc">:</span> <span class="ts">"Kathmandu, Nepal 🇳🇵"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"experience"</span><span class="tpunc">:</span> <span class="tv">"2+ years"</span><span class="tpunc">,</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"stack"</span><span class="tpunc">:</span> <span class="tpunc">[</span><span class="ts">"Laravel"</span><span class="tpunc">,</span> <span class="ts">"Vue.js"</span><span class="tpunc">,</span> <span class="ts">"Nuxt.js"</span><span class="tpunc">,</span> <span class="ts">"Quasar"</span><span class="tpunc">],</span></span>
+      <span class="to">&nbsp;&nbsp;<span class="tk">"open_to_work"</span><span class="tpunc">:</span> <span class="tv">true</span></span>
+      <span class="to"><span class="tpunc">}</span></span>
+      <div class="t-gap"></div>
+      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="tc">git log --oneline -4</span></div>
+      <div class="t-gap"></div>
+      <span class="to"><span style="color:var(--yellow)">f2c91a3</span> feat: GRC compliance module @ Trilokiya</span>
+      <span class="to"><span style="color:var(--yellow)">b7d2e44</span> feat: Digital Nepal LMS — course engine</span>
+      <span class="to"><span style="color:var(--yellow)">a9e103f</span> fix: NEA Gunaso complaint tracker</span>
+      <span class="to"><span style="color:var(--yellow)">c3810bc</span> feat: Nepal Immigration portal modules</span>
+      <div class="t-gap"></div>
+      <div class="t-line"><span class="tp">mukesh@dev:~$</span> <span class="t-csr"></span></div>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="stat-cards">
+      <div class="sc"><div class="sc-num">2+</div><div class="sc-label">Years experience</div></div>
+      <div class="sc"><div class="sc-num">10+</div><div class="sc-label">Projects shipped</div></div>
+      <div class="sc"><div class="sc-num">5+</div><div class="sc-label">Gov. portals built</div></div>
+      <div class="sc"><div class="sc-num">3</div><div class="sc-label">Companies worked</div></div>
+    </div>
+    <div class="contrib-box">
+      <div class="cb-title">// contribution activity</div>
+      <div class="cb-grid" id="contrib-grid"></div>
+    </div>
+    <div class="tech-box">
+      <div class="tech-title">// tech proficiency</div>
+      <div class="tech-bars">
+        <div class="tbr"><span class="tbn">PHP/Laravel</span><div class="tbt"><div class="tbf" style="width:92%;background:var(--orange)"></div></div><span class="tbp">92%</span></div>
+        <div class="tbr"><span class="tbn">Vue.js</span><div class="tbt"><div class="tbf" style="width:88%;background:var(--green)"></div></div><span class="tbp">88%</span></div>
+        <div class="tbr"><span class="tbn">Nuxt.js</span><div class="tbt"><div class="tbf" style="width:85%;background:var(--blue)"></div></div><span class="tbp">85%</span></div>
+        <div class="tbr"><span class="tbn">Quasar</span><div class="tbt"><div class="tbf" style="width:82%;background:var(--purple)"></div></div><span class="tbp">82%</span></div>
+        <div class="tbr"><span class="tbn">MySQL</span><div class="tbt"><div class="tbf" style="width:60%;background:var(--yellow)"></div></div><span class="tbp">60%</span></div>
+      </div>
+    </div>
+    <div class="hero-ctas">
+      <a href="#projects" class="btn-p">$ view --projects</a>
+      <a href="#contact"  class="btn-o">$ git contact</a>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="sh reveal">
+    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">about.ts</span></div>
+    <div class="st">About <span class="hl-g">me</span></div>
+  </div>
+  <div class="about-grid">
+    <div class="cb reveal">
+      <div class="cbh">📄 about.ts</div>
+      <div class="cbb">
+        <div><span class="ln">1</span><span class="kw">const</span> <span class="fn">developer</span> <span class="punc">= {</span></div>
+        <div><span class="ln">2</span>&nbsp;&nbsp;<span class="prop">name</span><span class="punc">:</span> <span class="str2">"Mukesh Mandal"</span><span class="punc">,</span></div>
+        <div><span class="ln">3</span>&nbsp;&nbsp;<span class="prop">based</span><span class="punc">:</span> <span class="str2">"New Baneshwor, Kathmandu"</span><span class="punc">,</span></div>
+        <div><span class="ln">4</span>&nbsp;&nbsp;<span class="prop">degree</span><span class="punc">:</span> <span class="str2">"BIM — Orchid Int'l College"</span><span class="punc">,</span></div>
+        <div><span class="ln">5</span>&nbsp;&nbsp;<span class="prop">company</span><span class="punc">:</span> <span class="str2">"Trilokiya Tech"</span><span class="punc">,</span></div>
+        <div><span class="ln">6</span>&nbsp;&nbsp;<span class="prop">focus</span><span class="punc">:</span> <span class="str2">"GRC Systems"</span><span class="punc">,</span></div>
+        <div><span class="ln">7</span>&nbsp;&nbsp;<span class="prop">passion</span><span class="punc">: [</span></div>
+        <div><span class="ln">8</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Government digital portals"</span><span class="punc">,</span></div>
+        <div><span class="ln">9</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Full-stack Laravel + Vue"</span><span class="punc">,</span></div>
+        <div><span class="ln">10</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="str2">"Clean scalable REST APIs"</span></div>
+        <div><span class="ln">11</span>&nbsp;&nbsp;<span class="punc">],</span></div>
+        <div><span class="ln">12</span>&nbsp;&nbsp;<span class="prop">openToWork</span><span class="punc">:</span> <span class="num">true</span></div>
+        <div><span class="ln">13</span><span class="punc">}</span></div>
+        <div>&nbsp;</div>
+        <div><span class="ln">15</span><span class="cm">// Started as a Laravel intern in 2023.</span></div>
+        <div><span class="ln">16</span><span class="cm">// Now shipping gov-grade systems used</span></div>
+        <div><span class="ln">17</span><span class="cm">// by thousands of Nepali citizens.</span></div>
+      </div>
+    </div>
+    <div class="cb reveal">
+      <div class="cbh">📦 skills.json</div>
+      <div class="cbb" style="padding:0.4rem 0">
+        <div class="skill-rows">
+          <div class="sr"><span class="sr-icon" style="color:var(--orange)">▸</span><span class="sr-name">PHP / Laravel</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Vue.js</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--blue)">▸</span><span class="sr-name">Nuxt.js</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--purple)">▸</span><span class="sr-name">Quasar Framework</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Tailwind CSS</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--blue)">▸</span><span class="sr-name">HTML / CSS</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--green)">▸</span><span class="sr-name">Laravel Livewire</span><span class="sr-lv lv-b">basic</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--orange)">▸</span><span class="sr-name">RESTful APIs</span><span class="sr-lv lv-e">expert</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--yellow)">▸</span><span class="sr-name">MySQL</span><span class="sr-lv lv-m">proficient</span></div>
+          <div class="sr"><span class="sr-icon" style="color:var(--text-dim)">▸</span><span class="sr-name">MS Office</span><span class="sr-lv lv-b">basic</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience">
+  <div class="sh reveal">
+    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">experience.ts</span></div>
+    <div class="st">Work <span class="hl-g">History</span></div>
+  </div>
+  <div class="exp-list">
+
+    <div class="ei ei-current">
+      <div class="ei-meta">
+        <div class="ei-date">Feb 2025 — Present<br><span style="color:var(--green);font-size:0.58rem">● CURRENT</span></div>
+        <div class="ei-company">Trilokiya Tech</div>
+        <div class="ei-loc">📍 Kathmandu</div>
+      </div>
+      <div>
+        <div class="ei-role">Full Stack Web Developer</div>
+        <div class="ei-desc">Working on the GRC (Governance, Risk &amp; Compliance) system — building risk assessment modules, compliance checklist workflows, audit trails, and management reporting dashboards for enterprise clients.</div>
+        <div class="ei-chips">
+          <span class="chip chip-cur">Laravel</span>
+          <span class="chip chip-cur">Vue.js</span>
+          <span class="chip chip-cur">Nuxt.js</span>
+          <span class="chip chip-cur">GRC</span>
+          <span class="chip chip-cur">Risk Management</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ei">
+      <div class="ei-meta">
+        <div class="ei-date">Aug 2024 — Feb 2025</div>
+        <div class="ei-company">Yaj Tech</div>
+        <div class="ei-loc">📍 Kathmandu</div>
+      </div>
+      <div>
+        <div class="ei-role">Full Stack Web Developer</div>
+        <div class="ei-desc">Delivered large-scale government digital initiatives — built the Digital Nepal LMS platform, contributed to Nepal Immigration Portal, the NEA Gunaso complaint system, Hello Sarkar grievance portal, Online Registration System, and Darta Chalani document management system using Laravel, Vue.js, and Nuxt.js.</div>
+        <div class="ei-chips">
+          <span class="chip">Laravel</span>
+          <span class="chip">Vue.js</span>
+          <span class="chip">Nuxt.js</span>
+          <span class="chip">Gov Portals</span>
+          <span class="chip">LMS</span>
+          <span class="chip">Quasar</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ei">
+      <div class="ei-meta">
+        <div class="ei-date">Apr 2023 — Aug 2023</div>
+        <div class="ei-company">Freelancer Unit Pvt. Ltd</div>
+        <div class="ei-loc">📍 Kathmandu</div>
+      </div>
+      <div>
+        <div class="ei-role">Laravel Junior Developer</div>
+        <div class="ei-desc">Promoted from intern to junior developer. Built Laravel features for production projects, collaborated with senior team on client deliverables.</div>
+        <div class="ei-chips">
+          <span class="chip">Laravel</span>
+          <span class="chip">PHP</span>
+          <span class="chip">MySQL</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ei">
+      <div class="ei-meta">
+        <div class="ei-date">Jan 2023 — Apr 2023</div>
+        <div class="ei-company">Freelancer Unit Pvt. Ltd</div>
+        <div class="ei-loc">📍 Kathmandu</div>
+      </div>
+      <div>
+        <div class="ei-role">Laravel Intern</div>
+        <div class="ei-desc">Learned Laravel and Livewire fundamentals, conducted research, and built foundational skills in PHP backend development.</div>
+        <div class="ei-chips">
+          <span class="chip">Laravel</span>
+          <span class="chip">Livewire</span>
+          <span class="chip">PHP</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects">
+  <div class="sh reveal">
+    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">projects.php</span></div>
+    <div class="st">Featured <span class="hl-b">Projects</span></div>
+  </div>
+  <div class="pg">
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">🛡️</span><span class="pc-num">01</span></div>
+      <div class="pc-name">GRC System</div>
+      <span class="pc-co co-t">@ Trilokiya Tech — Current</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Nuxt.js</span><span class="pt">Enterprise</span><span class="pt">GRC</span></div>
+      <div class="pc-desc">Governance, Risk &amp; Compliance platform for enterprise clients. Building risk assessment modules, compliance checklist workflows, audit trail systems, and executive reporting dashboards to manage regulatory requirements.</div>
+      <span class="pl-na">🔒 Internal / Confidential</span>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">🎓</span><span class="pc-num">02</span></div>
+      <div class="pc-name">Digital Nepal LMS</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Nuxt.js</span><span class="pt">E-Learning</span><span class="pt">Government</span></div>
+      <div class="pc-desc">National-scale Learning Management System under the Digital Nepal initiative. Built course modules, enrollment flows, progress tracking dashboards, and role-based access for administrators, instructors, and government department learners nationwide.</div>
+      <span class="pl-na">🔒 Internal / Confidential</span>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">✈️</span><span class="pc-num">03</span></div>
+      <div class="pc-name">Nepal Immigration Portal</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Government</span><span class="pt">Immigration</span></div>
+      <div class="pc-desc">Contributed to Nepal's official immigration web application — developed and enhanced modules for visa processing, traveler record management, and border control digital workflows used by immigration officers nationwide.</div>
+      <a href="https://nepaliport.immigration.gov.np/" class="pl" target="_blank">↗ nepaliport.immigration.gov.np</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">⚡</span><span class="pc-num">04</span></div>
+      <div class="pc-name">NEA Gunaso System</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Backpack</span><span class="pt">Nuxt.js</span><span class="pt">Vue.js</span><span class="pt">Complaint Mgmt</span></div>
+      <div class="pc-desc">Complaint management system for Nepal Electricity Authority. Built complaint submission, status tracking, field officer assignment, and resolution reporting — handling thousands of electricity-related complaints from citizens across Nepal.</div>
+      <a href="https://gunaso.nea.org.np/" class="pl" target="_blank">↗ gunaso.nea.org.np</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">🏛️</span><span class="pc-num">05</span></div>
+      <div class="pc-name">Hello Sarkar (Gunaso)</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Vue.js</span><span class="pt">Government</span><span class="pt">Grievance</span></div>
+      <div class="pc-desc">Nepal's official OPMCM government grievance portal. Citizens submit complaints directly to government offices and track resolution. Worked on complaint routing, notification systems, and departmental dashboards.</div>
+      <a href="https://gunaso.opmcm.gov.np/" class="pl" target="_blank">↗ gunaso.opmcm.gov.np</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">🖥️</span><span class="pc-num">06</span></div>
+      <div class="pc-name">Online Registration System</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Quasar</span><span class="pt">Government</span><span class="pt">Service Portal</span></div>
+      <div class="pc-desc">Nepal government web application enabling departments to request services and devices from higher authorities digitally — reducing paper-based bureaucracy across government offices.</div>
+      <a href="https://onlinesystem.doit.gov.np/" class="pl" target="_blank">↗ onlinesystem.doit.gov.np</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">📋</span><span class="pc-num">07</span></div>
+      <div class="pc-name">Darta Chalani</div>
+      <span class="pc-co co-y">@ Yaj Tech</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Backpack</span><span class="pt">Registration</span><span class="pt">STT Nepal</span></div>
+      <div class="pc-desc">Document registration and dispatch tracking system for STT Nepal, streamlining inbound/outbound correspondence management and administrative workflows across office departments.</div>
+      <a href="https://dartachalani.sttnepal.com/" class="pl" target="_blank">↗ dartachalani.sttnepal.com</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">📰</span><span class="pc-num">08</span></div>
+      <div class="pc-name">Tarai Khabar</div>
+      <span class="pc-co co-f">@ Freelancer Unit</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Livewire</span><span class="pt">News Portal</span><span class="pt">RBAC</span></div>
+      <div class="pc-desc">Full-featured news portal with admin-controlled role assignment for editors, authors, and contributors. Multi-user publishing workflows, monthly post analytics, and category management.</div>
+      <a href="https://taraikhabar.com/" class="pl" target="_blank">↗ taraikhabar.com</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">🏨</span><span class="pc-num">09</span></div>
+      <div class="pc-name">Coop Resort</div>
+      <span class="pc-co co-f">@ Freelancer Unit</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">Booking</span></div>
+      <div class="pc-desc">Online room booking platform for a resort. Users browse availability and complete reservations online. Includes admin panel for room and booking management.</div>
+      <a href="https://coopresort.com/" class="pl" target="_blank">↗ coopresort.com</a>
+    </div>
+
+    <div class="pc">
+      <div class="pc-top"><span class="pc-icon">📚</span><span class="pc-num">10</span></div>
+      <div class="pc-name">Library Management System</div>
+      <span class="pc-co co-f">@ College Project</span>
+      <div class="pc-tags"><span class="pt">Laravel</span><span class="pt">PHP</span><span class="pt">MySQL</span></div>
+      <div class="pc-desc">College capstone project built in Laravel — book cataloguing, member registration, borrow/return tracking, and fine calculation modules.</div>
+      <a href="https://github.com/muku9812/summer-project" class="pl" target="_blank">↗ github.com/muku9812</a>
+    </div>
+
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education">
+  <div class="sh reveal">
+    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">education.md</span></div>
+    <div class="st">Academic <span class="hl-g">Background</span></div>
+  </div>
+  <div class="edu-grid reveal">
+    <div class="edu-card">
+      <div class="edu-yr">Nov 2017 — June 2022</div>
+      <div class="edu-deg">Bachelor's in Information Management</div>
+      <div class="edu-sch">Orchid International College · Kathmandu</div>
+      <div class="edu-note">BIM — software development, databases, and information systems.</div>
+    </div>
+    <div class="edu-card">
+      <div class="edu-yr">June 2015 — August 2017</div>
+      <div class="edu-deg">+2 — Management with Computer Science</div>
+      <div class="edu-sch">Himalaya Higher Secondary School · Damak, Jhapa</div>
+      <div class="edu-note">Management faculty with Computer Science — early computing foundation.</div>
+    </div>
+  </div>
+  <div class="lang-sec reveal">
+    <div style="font-size:0.6rem;color:var(--text-dim);margin-bottom:0.8rem">// languages spoken</div>
+    <div class="lang-grid">
+      <div class="lc"><div class="lc-name">Nepali</div><div class="lbt"><div class="lbf" style="width:95%;background:var(--green)"></div></div><div class="lc-lvl">Native</div></div>
+      <div class="lc"><div class="lc-name">Hindi</div><div class="lbt"><div class="lbf" style="width:75%;background:var(--blue)"></div></div><div class="lc-lvl">Fluent</div></div>
+      <div class="lc"><div class="lc-name">English</div><div class="lbt"><div class="lbf" style="width:65%;background:var(--orange)"></div></div><div class="lc-lvl">Professional</div></div>
+      <div class="lc"><div class="lc-name">Bangoli</div><div class="lbt"><div class="lbf" style="width:40%;background:var(--purple)"></div></div><div class="lc-lvl">Conversational</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="sh reveal">
+    <div class="sbc"><span>portfolio</span><span>/</span><span class="sbc-a">contact.json</span></div>
+    <div class="st">Get in <span class="hl-g">Touch</span></div>
+  </div>
+  <div class="contact-grid">
+    <div class="t-win reveal">
+      <div class="t-bar">
+        <div class="tb tb-r"></div><div class="tb tb-y"></div><div class="tb tb-g"></div>
+        <span class="t-bar-title">contact.json</span>
+      </div>
+      <div class="t-body" style="font-size:0.75rem">
+        <span class="to"><span class="tpunc">{</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"email"</span><span class="tpunc">:</span> <span class="ts">"Mukesh986677@gmail.com"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"phone"</span><span class="tpunc">:</span> <span class="ts">"+977 9866775130"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"whatsapp"</span><span class="tpunc">:</span> <span class="ts">"+977 9866775130"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"location"</span><span class="tpunc">:</span> <span class="ts">"New Baneshwor, Kathmandu"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"github"</span><span class="tpunc">:</span> <span class="ts">"github.com/muku9812"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"linkedin"</span><span class="tpunc">:</span> <span class="ts">"linkedin.com/in/mukesh-mandal"</span><span class="tpunc">,</span></span>
+        <span class="to">&nbsp;&nbsp;<span class="tk">"open_to_work"</span><span class="tpunc">:</span> <span class="tv">true</span></span>
+        <span class="to"><span class="tpunc">}</span></span>
+        <div class="t-gap"></div>
+        <div class="t-line"><span class="tp">$</span> <span class="tc">send --message "Hello Mukesh"</span></div>
+        <span class="to" style="color:var(--green)">✓ Message sent successfully</span>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="cl-list">
+        <a href="mailto:Mukesh986677@gmail.com" class="cli">
+          <span class="cli-ico">📧</span>
+          <div><span class="cli-lbl">email</span><span class="cli-val">Mukesh986677@gmail.com</span></div>
+        </a>
+        <a href="tel:+9779866775130" class="cli">
+          <span class="cli-ico">📱</span>
+          <div><span class="cli-lbl">phone</span><span class="cli-val">+977 9866775130</span></div>
+        </a>
+        <a href="https://wa.me/9779866775130" class="cli" target="_blank">
+          <span class="cli-ico">💬</span>
+          <div><span class="cli-lbl">whatsapp</span><span class="cli-val">+977 9866775130</span></div>
+        </a>
+        <a href="https://github.com/muku9812" class="cli" target="_blank">
+          <span class="cli-ico">🐙</span>
+          <div><span class="cli-lbl">github</span><span class="cli-val">github.com/muku9812</span></div>
+        </a>
+        <a href="https://www.linkedin.com/in/mukesh-mandal-20b7a539b" class="cli" target="_blank">
+          <span class="cli-ico">💼</span>
+          <div><span class="cli-lbl">linkedin</span><span class="cli-val">linkedin.com/in/mukesh-mandal</span></div>
+        </a>
+        <div class="cli" style="cursor:default">
+          <span class="cli-ico">📍</span>
+          <div><span class="cli-lbl">location</span><span class="cli-val">New Baneshwor, Kathmandu 🇳🇵</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="display:flex;align-items:center;gap:1.2rem">
+    <div class="f-status"><div class="f-dot"></div>mukesh@portfolio:~$</div>
+    <span>© 2025 Mukesh Mandal</span>
+  </div>
+  <a href="#hero">↑ scroll to top</a>
+</footer>
+
+<script>
+  // Custom laptop cursor
+  const cur = document.getElementById('cursor');
+  const dot = document.getElementById('cursor-dot');
+  const trail = document.getElementById('cursor-trail');
+  let mx = 0, my = 0;
+
+  document.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cur.style.left = (mx - 4) + 'px';
+    cur.style.top  = (my - 4) + 'px';
+    dot.style.left = mx + 'px';
+    dot.style.top  = my + 'px';
+    trail.style.left = mx + 'px';
+    trail.style.top  = my + 'px';
+  });
+
+  // Scale cursor on hover over links/buttons
+  document.querySelectorAll('a, button').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.transform = 'translate(-4px,-4px) scale(1.3)';
+      cur.style.filter = 'drop-shadow(0 0 10px rgba(57,211,83,0.9))';
+      dot.style.transform = 'translate(-50%,-50%) scale(2)';
+      dot.style.background = '#fff';
+      trail.style.width = '40px';
+      trail.style.height = '40px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.transform = 'translate(-4px,-4px) scale(1)';
+      cur.style.filter = 'drop-shadow(0 0 6px rgba(57,211,83,0.7))';
+      dot.style.transform = 'translate(-50%,-50%) scale(1)';
+      dot.style.background = 'var(--green)';
+      trail.style.width = '28px';
+      trail.style.height = '28px';
+    });
+  });
+
+  // Contribution graph
+  const grid = document.getElementById('contrib-grid');
+  const pattern = [0,0,1,1,2,2,3,3,4,3,2,1,2,3,4,3,2,1,0,2,3,4,3,2,1,4];
+  const cls = ['','cc1','cc2','cc3','cc4'];
+  for (let r = 0; r < 7; r++) {
+    for (let c = 0; c < 26; c++) {
+      const el = document.createElement('div');
+      el.className = 'cc';
+      const base = pattern[c];
+      const lvl = Math.min(4, Math.max(0, base + Math.floor(Math.random() * 2) - (r % 3 === 0 ? 1 : 0)));
+      if (lvl > 0) el.classList.add(cls[lvl]);
+      grid.appendChild(el);
+    }
+  }
+
+  // Scroll reveal with IntersectionObserver
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add('visible');
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal, .ei, .pc').forEach(el => obs.observe(el));
+
+  // Stagger animations
+  document.querySelectorAll('.ei').forEach((el, i) => { el.style.transitionDelay = (i * 0.09) + 's'; });
+  document.querySelectorAll('.pc').forEach((el, i) => { el.style.transitionDelay = (i * 0.05) + 's'; });
+
+  // Active nav tab on scroll
+  const secs = document.querySelectorAll('section[id]');
+  const tabs = document.querySelectorAll('.nav-tab');
+  window.addEventListener('scroll', () => {
+    let active = '';
+    secs.forEach(s => { if (window.scrollY >= s.offsetTop - 120) active = s.id; });
+    tabs.forEach(t => {
+      t.classList.toggle('active', t.getAttribute('href') === '#' + active);
+    });
+  });
+</script>
+</body>
+</html>
