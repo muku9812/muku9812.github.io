@@ -1,0 +1,1127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mukesh Mandal | Full Stack Developer</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            'inter': ['Inter', 'sans-serif'],
+            'space': ['Space Grotesk', 'sans-serif'],
+          },
+          colors: {
+            'neon-blue': '#00f0ff',
+            'neon-purple': '#b026ff',
+            'neon-pink': '#ff006e',
+            'dark-bg': '#0a0a0f',
+            'card-bg': 'rgba(255,255,255,0.03)',
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #0a0a0f;
+      color: #e0e0e0;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom Cursor */
+    .cursor-dot {
+      width: 8px;
+      height: 8px;
+      background: #00f0ff;
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transition: transform 0.1s;
+      box-shadow: 0 0 10px #00f0ff, 0 0 20px #00f0ff;
+    }
+    .cursor-outline {
+      width: 40px;
+      height: 40px;
+      border: 2px solid rgba(0, 240, 255, 0.3);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transition: transform 0.15s, width 0.2s, height 0.2s;
+    }
+    .cursor-outline.hover {
+      width: 60px;
+      height: 60px;
+      border-color: #b026ff;
+      background: rgba(176, 38, 255, 0.1);
+    }
+
+    /* 3D Canvas Background */
+    #canvas-container {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    /* Scroll Progress */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #00f0ff, #b026ff, #ff006e);
+      z-index: 1000;
+      transition: width 0.1s;
+    }
+
+    /* Glass Card */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.02);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+      perspective: 1000px;
+    }
+    .glass-card:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(0, 240, 255, 0.3);
+      transform: translateY(-8px) rotateX(2deg);
+      box-shadow: 0 25px 50px -12px rgba(0, 240, 255, 0.15);
+    }
+
+    /* 3D Tilt Effect */
+    .tilt-card {
+      transform-style: preserve-3d;
+      transition: transform 0.3s ease;
+    }
+
+    /* Neon Text */
+    .neon-text {
+      text-shadow: 0 0 10px rgba(0, 240, 255, 0.5),
+      0 0 20px rgba(0, 240, 255, 0.3),
+      0 0 40px rgba(0, 240, 255, 0.2);
+    }
+    .neon-purple {
+      text-shadow: 0 0 10px rgba(176, 38, 255, 0.5),
+      0 0 20px rgba(176, 38, 255, 0.3);
+    }
+
+    /* Floating Animation */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-20px) rotate(2deg); }
+    }
+    @keyframes float-delayed {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-15px) rotate(-2deg); }
+    }
+    .float { animation: float 6s ease-in-out infinite; }
+    .float-delayed { animation: float-delayed 7s ease-in-out infinite 1s; }
+
+    /* Pulse Glow */
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 20px rgba(0, 240, 255, 0.2); }
+      50% { box-shadow: 0 0 40px rgba(0, 240, 255, 0.4), 0 0 60px rgba(176, 38, 255, 0.2); }
+    }
+    .pulse-glow { animation: pulse-glow 3s ease-in-out infinite; }
+
+    /* Orbit Animation */
+    @keyframes orbit {
+      from { transform: rotate(0deg) translateX(150px) rotate(0deg); }
+      to { transform: rotate(360deg) translateX(150px) rotate(-360deg); }
+    }
+    .orbit-item {
+      animation: orbit 20s linear infinite;
+    }
+
+    /* Skill Bar Animation */
+    @keyframes fill-bar {
+      from { width: 0%; }
+      to { width: var(--target-width); }
+    }
+    .skill-fill {
+      animation: fill-bar 2s ease-out forwards;
+    }
+
+    /* Typing Effect */
+    .typing::after {
+      content: '|';
+      animation: blink 1s infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    /* Gradient Border */
+    .gradient-border {
+      position: relative;
+      background: linear-gradient(#0a0a0f, #0a0a0f) padding-box,
+      linear-gradient(135deg, #00f0ff, #b026ff, #ff006e) border-box;
+      border: 2px solid transparent;
+    }
+
+    /* Timeline */
+    .timeline-line {
+      background: linear-gradient(to bottom, #00f0ff, #b026ff, #ff006e);
+    }
+
+    /* Particle */
+    .particle {
+      position: absolute;
+      width: 4px;
+      height: 4px;
+      background: #00f0ff;
+      border-radius: 50%;
+      pointer-events: none;
+      opacity: 0;
+      animation: particle-float 4s ease-in-out infinite;
+    }
+    @keyframes particle-float {
+      0% { opacity: 0; transform: translateY(0) scale(0); }
+      20% { opacity: 1; transform: translateY(-20px) scale(1); }
+      80% { opacity: 1; transform: translateY(-100px) scale(1); }
+      100% { opacity: 0; transform: translateY(-150px) scale(0); }
+    }
+
+    /* 3D Cube */
+    .cube-container {
+      perspective: 1000px;
+      width: 200px;
+      height: 200px;
+    }
+    .cube {
+      width: 100%;
+      height: 100%;
+      position: relative;
+      transform-style: preserve-3d;
+      animation: rotate-cube 15s infinite linear;
+    }
+    @keyframes rotate-cube {
+      from { transform: rotateX(0deg) rotateY(0deg); }
+      to { transform: rotateX(360deg) rotateY(360deg); }
+    }
+    .cube-face {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      border: 2px solid rgba(0, 240, 255, 0.3);
+      background: rgba(0, 240, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      backdrop-filter: blur(5px);
+    }
+    .cube-face:nth-child(1) { transform: rotateY(0deg) translateZ(100px); }
+    .cube-face:nth-child(2) { transform: rotateY(90deg) translateZ(100px); }
+    .cube-face:nth-child(3) { transform: rotateY(180deg) translateZ(100px); }
+    .cube-face:nth-child(4) { transform: rotateY(-90deg) translateZ(100px); }
+    .cube-face:nth-child(5) { transform: rotateX(90deg) translateZ(100px); }
+    .cube-face:nth-child(6) { transform: rotateX(-90deg) translateZ(100px); }
+
+    /* Section Reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .reveal.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Navigation */
+    .nav-link {
+      position: relative;
+      overflow: hidden;
+    }
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #00f0ff, #b026ff);
+      transition: width 0.3s ease;
+    }
+    .nav-link:hover::after {
+      width: 100%;
+    }
+
+    /* Project Card Hover */
+    .project-card {
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+    .project-card:hover::before {
+      left: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .cursor-dot, .cursor-outline { display: none; }
+      body { cursor: auto; }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0a0a0f;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: linear-gradient(180deg, #00f0ff, #b026ff);
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="font-inter">
+<!-- Custom Cursor -->
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-outline" id="cursor-outline"></div>
+
+<!-- Scroll Progress -->
+<div class="scroll-progress" id="scroll-progress"></div>
+
+<!-- 3D Canvas Background -->
+<canvas id="canvas-container"></canvas>
+
+<!-- Navigation -->
+<nav class="fixed top-0 left-0 w-full z-50 px-6 py-4">
+  <div class="max-w-7xl mx-auto flex justify-between items-center">
+    <div class="text-2xl font-space font-bold neon-text">
+      <span class="text-neon-blue">M</span>ukesh
+    </div>
+    <div class="hidden md:flex space-x-8">
+      <a href="#home" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">Home</a>
+      <a href="#about" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">About</a>
+      <a href="#experience" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">Experience</a>
+      <a href="#projects" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">Projects</a>
+      <a href="#skills" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">Skills</a>
+      <a href="#contact" class="nav-link text-sm font-medium hover:text-neon-blue transition-colors">Contact</a>
+    </div>
+    <button id="mobile-menu-btn" class="md:hidden text-2xl">
+      <i class="fas fa-bars"></i>
+    </button>
+  </div>
+  <!-- Mobile Menu -->
+  <div id="mobile-menu" class="hidden md:hidden mt-4 glass-card p-4">
+    <div class="flex flex-col space-y-4">
+      <a href="#home" class="text-sm font-medium hover:text-neon-blue transition-colors">Home</a>
+      <a href="#about" class="text-sm font-medium hover:text-neon-blue transition-colors">About</a>
+      <a href="#experience" class="text-sm font-medium hover:text-neon-blue transition-colors">Experience</a>
+      <a href="#projects" class="text-sm font-medium hover:text-neon-blue transition-colors">Projects</a>
+      <a href="#skills" class="text-sm font-medium hover:text-neon-blue transition-colors">Skills</a>
+      <a href="#contact" class="text-sm font-medium hover:text-neon-blue transition-colors">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero Section -->
+<section id="home" class="relative min-h-screen flex items-center justify-center px-6">
+  <div class="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center relative z-10">
+    <div class="text-center md:text-left">
+      <div class="inline-block px-4 py-2 rounded-full glass-card mb-6 float">
+        <span class="text-neon-blue text-sm font-medium">👋 Welcome to my portfolio</span>
+      </div>
+      <h1 class="text-5xl md:text-7xl font-space font-bold mb-6 leading-tight">
+        I'm <span class="text-neon-blue neon-text">Mukesh</span><br>
+        <span class="text-3xl md:text-5xl text-gray-400 typing" id="typing-text"></span>
+      </h1>
+      <p class="text-gray-400 text-lg mb-8 max-w-lg">
+        Full Stack Web Developer specializing in Laravel, Vue.js, and modern web technologies.
+        Building scalable applications with passion and precision.
+      </p>
+      <div class="flex flex-wrap gap-4 justify-center md:justify-start">
+        <a href="#projects" class="px-8 py-4 rounded-full bg-gradient-to-r from-neon-blue to-neon-purple text-white font-semibold hover:shadow-lg hover:shadow-neon-blue/30 transition-all transform hover:scale-105">
+          View Projects
+        </a>
+        <a href="#contact" class="px-8 py-4 rounded-full glass-card border border-neon-blue/30 text-neon-blue font-semibold hover:bg-neon-blue/10 transition-all">
+          Contact Me
+        </a>
+      </div>
+      <div class="flex gap-6 mt-8 justify-center md:justify-start">
+        <a href="https://github.com/muku9812" target="_blank" class="text-2xl text-gray-400 hover:text-neon-blue transition-colors hover:scale-110 transform">
+          <i class="fab fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/mukeshmandal-47b6621b8/" target="_blank" class="text-2xl text-gray-400 hover:text-neon-blue transition-colors hover:scale-110 transform">
+          <i class="fab fa-linkedin"></i>
+        </a>
+        <a href="https://www.facebook.com/mukesh.mandal.986677" target="_blank" class="text-2xl text-gray-400 hover:text-neon-blue transition-colors hover:scale-110 transform">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </div>
+    </div>
+    <div class="flex justify-center items-center">
+      <div class="cube-container">
+        <div class="cube">
+          <div class="cube-face"><i class="fab fa-laravel text-neon-pink"></i></div>
+          <div class="cube-face"><i class="fab fa-vuejs text-green-400"></i></div>
+          <div class="cube-face"><i class="fab fa-php text-indigo-400"></i></div>
+          <div class="cube-face"><i class="fab fa-js text-yellow-400"></i></div>
+          <div class="cube-face"><i class="fas fa-database text-neon-blue"></i></div>
+          <div class="cube-face"><i class="fab fa-html5 text-orange-500"></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+    <a href="#about" class="text-neon-blue text-2xl">
+      <i class="fas fa-chevron-down"></i>
+    </a>
+  </div>
+</section>
+
+<!-- About Section -->
+<section id="about" class="relative py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-5xl font-space font-bold mb-4">
+        About <span class="text-neon-blue neon-text">Me</span>
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-neon-blue to-neon-purple mx-auto rounded-full"></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-12 items-center">
+      <div class="reveal">
+        <div class="glass-card p-8 relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-neon-blue/10 rounded-full blur-3xl"></div>
+          <div class="absolute bottom-0 left-0 w-32 h-32 bg-neon-purple/10 rounded-full blur-3xl"></div>
+          <div class="relative z-10">
+            <div class="w-48 h-48 mx-auto mb-6 rounded-full gradient-border p-1">
+              <div class="w-full h-full rounded-full bg-gradient-to-br from-neon-blue/20 to-neon-purple/20 flex items-center justify-center text-6xl">
+                <i class="fas fa-user text-neon-blue"></i>
+              </div>
+            </div>
+            <h3 class="text-2xl font-bold text-center mb-2">Mukesh Mandal</h3>
+            <p class="text-neon-blue text-center mb-4">Full Stack Developer</p>
+            <div class="flex justify-center gap-4 text-sm text-gray-400">
+                                <span class="flex items-center gap-2">
+                                    <i class="fas fa-map-marker-alt text-neon-pink"></i> Kathmandu, Nepal
+                                </span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal">
+        <h3 class="text-2xl font-bold mb-6">Education & Background</h3>
+        <div class="space-y-6">
+          <div class="glass-card p-6 tilt-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full bg-neon-blue/10 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-graduation-cap text-neon-blue text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg">Bachelor's in Information Management (BIM)</h4>
+                <p class="text-neon-blue">Orchid International College, Kathmandu</p>
+                <p class="text-gray-400 text-sm mt-1">November 2017 - June 2022</p>
+              </div>
+            </div>
+          </div>
+          <div class="glass-card p-6 tilt-card">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-full bg-neon-purple/10 flex items-center justify-center flex-shrink-0">
+                <i class="fas fa-school text-neon-purple text-xl"></i>
+              </div>
+              <div>
+                <h4 class="font-bold text-lg">Higher Secondary (+2)</h4>
+                <p class="text-neon-purple">Himalaya Higher Secondary School, Damak, Jhapa</p>
+                <p class="text-gray-400 text-sm mt-1">June 2015 - August 2017</p>
+                <p class="text-gray-500 text-sm">Management Faculty with Computer Science</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-8 glass-card p-6">
+          <h4 class="font-bold mb-4">Languages</h4>
+          <div class="flex flex-wrap gap-3">
+            <span class="px-4 py-2 rounded-full bg-neon-blue/10 text-neon-blue text-sm">English</span>
+            <span class="px-4 py-2 rounded-full bg-neon-purple/10 text-neon-purple text-sm">Nepali</span>
+            <span class="px-4 py-2 rounded-full bg-neon-pink/10 text-neon-pink text-sm">Hindi</span>
+            <span class="px-4 py-2 rounded-full bg-green-500/10 text-green-400 text-sm">Bengali</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Experience Section -->
+<section id="experience" class="relative py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-5xl font-space font-bold mb-4">
+        Work <span class="text-neon-purple neon-purple">Experience</span>
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-neon-purple to-neon-pink mx-auto rounded-full"></div>
+    </div>
+    <div class="relative">
+      <!-- Timeline Line -->
+      <div class="absolute left-1/2 transform -translate-x-1/2 w-1 h-full timeline-line rounded-full hidden md:block"></div>
+
+      <!-- Experience 1 -->
+      <div class="relative mb-12 reveal">
+        <div class="md:flex items-center justify-between">
+          <div class="md:w-5/12 md:text-right mb-4 md:mb-0">
+            <div class="glass-card p-6 tilt-card">
+              <h3 class="text-xl font-bold text-neon-blue">Full Stack Web Developer</h3>
+              <p class="text-neon-purple font-medium">Yaj Tech</p>
+              <p class="text-gray-400 text-sm mt-2">Kathmandu, Nepal</p>
+              <p class="text-gray-500 text-sm">August 2024 - Present</p>
+            </div>
+          </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-neon-blue rounded-full border-4 border-dark-bg hidden md:block pulse-glow"></div>
+          <div class="md:w-5/12">
+            <div class="glass-card p-6">
+              <p class="text-gray-300">Working as a Full Stack Developer, building and maintaining web applications using Laravel, Vue.js, and modern frontend technologies.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience 2 -->
+      <div class="relative mb-12 reveal">
+        <div class="md:flex items-center justify-between">
+          <div class="md:w-5/12 order-2 md:order-1">
+            <div class="glass-card p-6">
+              <p class="text-gray-300">Worked as a Junior Laravel Developer, developing backend systems and API integrations for various client projects.</p>
+            </div>
+          </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-neon-purple rounded-full border-4 border-dark-bg hidden md:block pulse-glow"></div>
+          <div class="md:w-5/12 md:text-left mb-4 md:mb-0 order-1 md:order-2">
+            <div class="glass-card p-6 tilt-card">
+              <h3 class="text-xl font-bold text-neon-purple">Laravel Junior Developer</h3>
+              <p class="text-neon-blue font-medium">Freelancer Unit Pvt. Ltd</p>
+              <p class="text-gray-400 text-sm mt-2">Kathmandu, Nepal</p>
+              <p class="text-gray-500 text-sm">April 2023 - August 2023</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Experience 3 -->
+      <div class="relative reveal">
+        <div class="md:flex items-center justify-between">
+          <div class="md:w-5/12 md:text-right mb-4 md:mb-0">
+            <div class="glass-card p-6 tilt-card">
+              <h3 class="text-xl font-bold text-neon-pink">Laravel Intern</h3>
+              <p class="text-neon-blue font-medium">Freelancer Unit Pvt. Ltd</p>
+              <p class="text-gray-400 text-sm mt-2">Kathmandu, Nepal</p>
+              <p class="text-gray-500 text-sm">January 2023 - April 2023</p>
+            </div>
+          </div>
+          <div class="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-neon-pink rounded-full border-4 border-dark-bg hidden md:block pulse-glow"></div>
+          <div class="md:w-5/12">
+            <div class="glass-card p-6">
+              <p class="text-gray-300">Learned the basics of Laravel and Livewire framework. Conducted research on modern web development practices and patterns.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Projects Section -->
+<section id="projects" class="relative py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-5xl font-space font-bold mb-4">
+        Featured <span class="text-neon-pink" style="text-shadow: 0 0 20px rgba(255,0,110,0.5)">Projects</span>
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-neon-pink to-neon-blue mx-auto rounded-full"></div>
+    </div>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <!-- Project 1 -->
+      <div class="glass-card project-card reveal group">
+        <div class="h-48 bg-gradient-to-br from-neon-blue/20 to-neon-purple/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-newspaper text-6xl text-neon-blue group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-neon-blue transition-colors">Tarai Khabar</h3>
+          <p class="text-gray-400 text-sm mb-4">News Portal with role-based access control. Admin can assign roles, manage posts, and users can track their contributions.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple text-xs">Vue.js</span>
+            <span class="px-3 py-1 rounded-full bg-neon-pink/10 text-neon-pink text-xs">MySQL</span>
+          </div>
+          <a href="https://taraikhabar.com" target="_blank" class="inline-flex items-center gap-2 text-neon-blue hover:text-white transition-colors">
+            Visit Site <i class="fas fa-external-link-alt text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="glass-card project-card reveal group" style="transition-delay: 0.1s">
+        <div class="h-48 bg-gradient-to-br from-neon-purple/20 to-neon-pink/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-hotel text-6xl text-neon-purple group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-neon-purple transition-colors">Coop Resort</h3>
+          <p class="text-gray-400 text-sm mb-4">Online resort booking system where users can browse rooms, check availability, and make reservations seamlessly.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Vue.js</span>
+            <span class="px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs">Booking</span>
+          </div>
+          <a href="https://coopresort.com" target="_blank" class="inline-flex items-center gap-2 text-neon-purple hover:text-white transition-colors">
+            Visit Site <i class="fas fa-external-link-alt text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Project 3 -->
+      <div class="glass-card project-card reveal group" style="transition-delay: 0.2s">
+        <div class="h-48 bg-gradient-to-br from-neon-pink/20 to-neon-blue/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-book text-6xl text-neon-pink group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-neon-pink transition-colors">Library Management</h3>
+          <p class="text-gray-400 text-sm mb-4">College project for managing library operations including book cataloging, borrowing, and user management.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple text-xs">MySQL</span>
+          </div>
+          <a href="https://github.com/muku9812/summer-project" target="_blank" class="inline-flex items-center gap-2 text-neon-pink hover:text-white transition-colors">
+            View Code <i class="fab fa-github text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Project 4 -->
+      <div class="glass-card project-card reveal group" style="transition-delay: 0.3s">
+        <div class="h-48 bg-gradient-to-br from-green-500/20 to-neon-blue/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-landmark text-6xl text-green-400 group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-green-400 transition-colors">Online Registration</h3>
+          <p class="text-gray-400 text-sm mb-4">Nepal Government web application for requesting services and devices from higher authorities.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-400 text-xs">Government</span>
+          </div>
+          <a href="https://onlinesystem.doit.gov.np" target="_blank" class="inline-flex items-center gap-2 text-green-400 hover:text-white transition-colors">
+            Visit Site <i class="fas fa-external-link-alt text-sm"></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Project 5 -->
+      <div class="glass-card project-card reveal group" style="transition-delay: 0.4s">
+        <div class="h-48 bg-gradient-to-br from-yellow-500/20 to-neon-purple/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-bolt text-6xl text-yellow-400 group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-yellow-400 transition-colors">NEA Gunaso</h3>
+          <p class="text-gray-400 text-sm mb-4">Complaint management system for Nepal Electricity Authority to track and resolve customer complaints.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-yellow-500/10 text-yellow-400 text-xs">NEA</span>
+          </div>
+          <span class="text-gray-500 text-sm">Private Domain</span>
+        </div>
+      </div>
+
+      <!-- Project 6 -->
+      <div class="glass-card project-card reveal group" style="transition-delay: 0.5s">
+        <div class="h-48 bg-gradient-to-br from-neon-blue/20 to-pink-500/20 flex items-center justify-center relative overflow-hidden">
+          <i class="fas fa-file-alt text-6xl text-neon-blue group-hover:scale-110 transition-transform duration-500"></i>
+          <div class="absolute inset-0 bg-gradient-to-t from-dark-bg to-transparent opacity-60"></div>
+        </div>
+        <div class="p-6">
+          <h3 class="text-xl font-bold mb-2 group-hover:text-neon-blue transition-colors">Darta Chalani</h3>
+          <p class="text-gray-400 text-sm mb-4">Registration system for managing official records and documentation processes.</p>
+          <div class="flex flex-wrap gap-2 mb-4">
+            <span class="px-3 py-1 rounded-full bg-neon-blue/10 text-neon-blue text-xs">Laravel</span>
+            <span class="px-3 py-1 rounded-full bg-neon-purple/10 text-neon-purple text-xs">Registration</span>
+          </div>
+          <a href="https://dartachalani.sttnepal.com" target="_blank" class="inline-flex items-center gap-2 text-neon-blue hover:text-white transition-colors">
+            Visit Site <i class="fas fa-external-link-alt text-sm"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Skills Section -->
+<section id="skills" class="relative py-24 px-6">
+  <div class="max-w-7xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-5xl font-space font-bold mb-4">
+        Technical <span class="text-neon-blue neon-text">Skills</span>
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-neon-blue to-neon-purple mx-auto rounded-full"></div>
+    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- Skillful Skills -->
+      <div class="reveal">
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fas fa-star text-neon-blue"></i>
+          Skillful
+        </h3>
+        <div class="space-y-4">
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">PHP / Laravel</span>
+              <span class="text-neon-blue">95%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full skill-fill" style="--target-width: 95%"></div>
+            </div>
+          </div>
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">Vue.js</span>
+              <span class="text-neon-blue">90%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full skill-fill" style="--target-width: 90%"></div>
+            </div>
+          </div>
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">Nuxt.js</span>
+              <span class="text-neon-blue">85%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full skill-fill" style="--target-width: 85%"></div>
+            </div>
+          </div>
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">HTML / Tailwind CSS</span>
+              <span class="text-neon-blue">90%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full skill-fill" style="--target-width: 90%"></div>
+            </div>
+          </div>
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">Quasar Framework</span>
+              <span class="text-neon-blue">85%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-blue to-neon-purple rounded-full skill-fill" style="--target-width: 85%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Beginner Skills & Soft Skills -->
+      <div class="reveal">
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fas fa-seedling text-neon-purple"></i>
+          Growing & Soft Skills
+        </h3>
+        <div class="space-y-4 mb-8">
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">MySQL</span>
+              <span class="text-neon-purple">70%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-purple to-neon-pink rounded-full skill-fill" style="--target-width: 70%"></div>
+            </div>
+          </div>
+          <div class="glass-card p-4">
+            <div class="flex justify-between mb-2">
+              <span class="font-medium">Microsoft Office</span>
+              <span class="text-neon-purple">65%</span>
+            </div>
+            <div class="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-neon-purple to-neon-pink rounded-full skill-fill" style="--target-width: 65%"></div>
+            </div>
+          </div>
+        </div>
+
+        <h3 class="text-2xl font-bold mb-6 flex items-center gap-3">
+          <i class="fas fa-users text-neon-pink"></i>
+          Soft Skills
+        </h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="glass-card p-4 text-center hover:border-neon-pink/50 transition-colors">
+            <i class="fas fa-comments text-3xl text-neon-pink mb-2"></i>
+            <p class="font-medium">Communication</p>
+          </div>
+          <div class="glass-card p-4 text-center hover:border-neon-blue/50 transition-colors">
+            <i class="fas fa-puzzle-piece text-3xl text-neon-blue mb-2"></i>
+            <p class="font-medium">Problem Solving</p>
+          </div>
+          <div class="glass-card p-4 text-center hover:border-neon-purple/50 transition-colors">
+            <i class="fas fa-lightbulb text-3xl text-neon-purple mb-2"></i>
+            <p class="font-medium">Adaptability</p>
+          </div>
+          <div class="glass-card p-4 text-center hover:border-green-400/50 transition-colors">
+            <i class="fas fa-handshake text-3xl text-green-400 mb-2"></i>
+            <p class="font-medium">Teamwork</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Contact Section -->
+<section id="contact" class="relative py-24 px-6">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-16 reveal">
+      <h2 class="text-4xl md:text-5xl font-space font-bold mb-4">
+        Get In <span class="text-neon-purple neon-purple">Touch</span>
+      </h2>
+      <div class="w-24 h-1 bg-gradient-to-r from-neon-purple to-neon-pink mx-auto rounded-full mb-4"></div>
+      <p class="text-gray-400">Let's build something amazing together</p>
+    </div>
+    <div class="glass-card p-8 md:p-12 reveal">
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="space-y-6">
+          <div class="flex items-center gap-4 group">
+            <div class="w-14 h-14 rounded-full bg-neon-blue/10 flex items-center justify-center group-hover:bg-neon-blue/20 transition-colors">
+              <i class="fas fa-phone text-neon-blue text-xl"></i>
+            </div>
+            <div>
+              <p class="text-gray-400 text-sm">Phone</p>
+              <p class="font-medium">9866775130</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 group">
+            <div class="w-14 h-14 rounded-full bg-neon-purple/10 flex items-center justify-center group-hover:bg-neon-purple/20 transition-colors">
+              <i class="fas fa-envelope text-neon-purple text-xl"></i>
+            </div>
+            <div>
+              <p class="text-gray-400 text-sm">Email</p>
+              <p class="font-medium">Mukesh986677@gmail.com</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-4 group">
+            <div class="w-14 h-14 rounded-full bg-neon-pink/10 flex items-center justify-center group-hover:bg-neon-pink/20 transition-colors">
+              <i class="fas fa-map-marker-alt text-neon-pink text-xl"></i>
+            </div>
+            <div>
+              <p class="text-gray-400 text-sm">Location</p>
+              <p class="font-medium">New Baneshwor, Kathmandu</p>
+            </div>
+          </div>
+        </div>
+        <div class="space-y-4">
+          <h3 class="text-xl font-bold mb-4">Connect With Me</h3>
+          <a href="https://github.com/muku9812" target="_blank" class="flex items-center gap-4 p-4 glass-card hover:border-neon-blue/50 transition-all group">
+            <i class="fab fa-github text-2xl text-gray-400 group-hover:text-neon-blue transition-colors"></i>
+            <div>
+              <p class="font-medium">GitHub</p>
+              <p class="text-gray-400 text-sm">@muku9812</p>
+            </div>
+            <i class="fas fa-arrow-right ml-auto text-gray-600 group-hover:text-neon-blue transition-colors"></i>
+          </a>
+          <a href="https://www.linkedin.com/in/mukeshmandal-47b6621b8/" target="_blank" class="flex items-center gap-4 p-4 glass-card hover:border-neon-blue/50 transition-all group">
+            <i class="fab fa-linkedin text-2xl text-gray-400 group-hover:text-neon-blue transition-colors"></i>
+            <div>
+              <p class="font-medium">LinkedIn</p>
+              <p class="text-gray-400 text-sm">Mukesh Mandal</p>
+            </div>
+            <i class="fas fa-arrow-right ml-auto text-gray-600 group-hover:text-neon-blue transition-colors"></i>
+          </a>
+          <a href="https://www.facebook.com/mukesh.mandal.986677" target="_blank" class="flex items-center gap-4 p-4 glass-card hover:border-neon-blue/50 transition-all group">
+            <i class="fab fa-facebook text-2xl text-gray-400 group-hover:text-neon-blue transition-colors"></i>
+            <div>
+              <p class="font-medium">Facebook</p>
+              <p class="text-gray-400 text-sm">Mukesh Mandal</p>
+            </div>
+            <i class="fas fa-arrow-right ml-auto text-gray-600 group-hover:text-neon-blue transition-colors"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="relative py-8 px-6 border-t border-white/5">
+  <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+    <div class="text-2xl font-space font-bold">
+      <span class="text-neon-blue">M</span>ukesh <span class="text-gray-500 text-lg">Mandal</span>
+    </div>
+    <p class="text-gray-500 text-sm"> Full Stack Web Developer. Built with passion.</p>
+    <div class="flex gap-4">
+      <a href="#home" class="text-gray-400 hover:text-neon-blue transition-colors">
+        <i class="fas fa-arrow-up"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Custom Cursor
+  const cursorDot = document.getElementById('cursor-dot');
+  const cursorOutline = document.getElementById('cursor-outline');
+
+  window.addEventListener('mousemove', (e) => {
+    const posX = e.clientX;
+    const posY = e.clientY;
+
+    cursorDot.style.left = `${posX - 4}px`;
+    cursorDot.style.top = `${posY - 4}px`;
+
+    cursorOutline.style.left = `${posX - 20}px`;
+    cursorOutline.style.top = `${posY - 20}px`;
+  });
+
+  // Hover effect on interactive elements
+  const interactiveElements = document.querySelectorAll('a, button, .glass-card, .tilt-card');
+  interactiveElements.forEach(el => {
+    el.addEventListener('mouseenter', () => cursorOutline.classList.add('hover'));
+    el.addEventListener('mouseleave', () => cursorOutline.classList.remove('hover'));
+  });
+
+  // Scroll Progress
+  const scrollProgress = document.getElementById('scroll-progress');
+  window.addEventListener('scroll', () => {
+    const scrollTop = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const scrollPercent = (scrollTop / docHeight) * 100;
+    scrollProgress.style.width = `${scrollPercent}%`;
+  });
+
+  // 3D Canvas Background
+  const canvas = document.getElementById('canvas-container');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  // Particles
+  const particles = [];
+  const particleCount = 100;
+
+  class Particle {
+    constructor() {
+      this.x = Math.random() * canvas.width;
+      this.y = Math.random() * canvas.height;
+      this.size = Math.random() * 2 + 0.5;
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = (Math.random() - 0.5) * 0.5;
+      this.opacity = Math.random() * 0.5 + 0.1;
+    }
+
+    update() {
+      this.x += this.speedX;
+      this.y += this.speedY;
+
+      if (this.x > canvas.width) this.x = 0;
+      if (this.x < 0) this.x = canvas.width;
+      if (this.y > canvas.height) this.y = 0;
+      if (this.y < 0) this.y = canvas.height;
+    }
+
+    draw() {
+      ctx.fillStyle = `rgba(0, 240, 255, ${this.opacity})`;
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+  }
+
+  for (let i = 0; i < particleCount; i++) {
+    particles.push(new Particle());
+  }
+
+  // Connection lines
+  function drawConnections() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < 150) {
+          const opacity = (1 - distance / 150) * 0.15;
+          ctx.strokeStyle = `rgba(0, 240, 255, ${opacity})`;
+          ctx.lineWidth = 1;
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  // Mouse interaction
+  let mouseX = 0;
+  let mouseY = 0;
+  window.addEventListener('mousemove', (e) => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+  });
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(particle => {
+      particle.update();
+      particle.draw();
+    });
+
+    drawConnections();
+
+    // Mouse glow effect
+    const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, 200);
+    gradient.addColorStop(0, 'rgba(0, 240, 255, 0.05)');
+    gradient.addColorStop(1, 'transparent');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    requestAnimationFrame(animate);
+  }
+  animate();
+
+  // Typing Effect
+  const typingText = document.getElementById('typing-text');
+  const texts = ['Full Stack Developer', 'Laravel Expert', 'Vue.js Developer', 'Problem Solver'];
+  let textIndex = 0;
+  let charIndex = 0;
+  let isDeleting = false;
+
+  function type() {
+    const currentText = texts[textIndex];
+
+    if (isDeleting) {
+      typingText.textContent = currentText.substring(0, charIndex - 1);
+      charIndex--;
+    } else {
+      typingText.textContent = currentText.substring(0, charIndex + 1);
+      charIndex++;
+    }
+
+    let typeSpeed = isDeleting ? 50 : 100;
+
+    if (!isDeleting && charIndex === currentText.length) {
+      typeSpeed = 2000;
+      isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      textIndex = (textIndex + 1) % texts.length;
+      typeSpeed = 500;
+    }
+
+    setTimeout(type, typeSpeed);
+  }
+  type();
+
+  // Scroll Reveal
+  const revealElements = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('active');
+      }
+    });
+  }, { threshold: 0.1 });
+
+  revealElements.forEach(el => revealObserver.observe(el));
+
+  // 3D Tilt Effect
+  const tiltCards = document.querySelectorAll('.tilt-card');
+  tiltCards.forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+
+      const rotateX = (y - centerY) / 20;
+      const rotateY = (centerX - x) / 20;
+
+      card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.02, 1.02, 1.02)`;
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)';
+    });
+  });
+
+  // Mobile Menu
+  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  mobileMenuBtn.addEventListener('click', () => {
+    mobileMenu.classList.toggle('hidden');
+  });
+
+  // Smooth Scroll
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        mobileMenu.classList.add('hidden');
+      }
+    });
+  });
+
+  // Skill Bar Animation on Scroll
+  const skillBars = document.querySelectorAll('.skill-fill');
+  const skillObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.animation = 'none';
+        entry.target.offsetHeight; // Trigger reflow
+        entry.target.style.animation = 'fill-bar 2s ease-out forwards';
+      }
+    });
+  }, { threshold: 0.5 });
+
+  skillBars.forEach(bar => skillObserver.observe(bar));
+
+  // Parallax Effect for Hero
+  window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const hero = document.getElementById('home');
+    if (hero) {
+      hero.style.transform = `translateY(${scrolled * 0.5}px)`;
+    }
+  });
+</script>
+</body>
+</html>
